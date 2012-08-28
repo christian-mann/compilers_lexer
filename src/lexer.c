@@ -3,6 +3,8 @@
 #include<stdbool.h>
 #include<string.h>
 
+#include "types.h"
+
 int main(int argc, char **argv) {
 	//open the file given as an argument
 	char *sfSrc;
