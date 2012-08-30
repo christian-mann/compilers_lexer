@@ -12,3 +12,9 @@ typedef struct rwordll {
 } ReservedWordList;
 
 ReservedWordList parseResWordFile(FILE* fp);
+
+
+typedef struct LinkedListString {
+	char* elem;
+	struct LinkedListString* next;
+}
