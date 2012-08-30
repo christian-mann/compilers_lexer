@@ -1,4 +1,4 @@
-#include<machines.h>
+#include "machines.h"
 char* IDRES(char* str) {
 	char* b = str;
 	char* f = b;
