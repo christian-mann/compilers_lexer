@@ -1,5 +1,5 @@
 #include "machines.h"
-char* IDRES(char* str) {
+MachineResult IDRES(char* str) {
 	char* b = str;
 	char* f = b;
 	int state = 0;
@@ -32,7 +32,7 @@ char* IDRES(char* str) {
 	return b; //false?
 }
 
-char* RELOP(char* str) {
+MachineResult RELOP(char* str) {
 	char* f = str;
 	int state = 0;
 	while(*f) {
@@ -78,21 +78,21 @@ char* RELOP(char* str) {
 			break;
 		case -1:
 			//error case
-			return b; //false?
+			return str; //false?
 		}
 		f++;
 	}
-	return b;
+	return str;
 }
 
-char* WS(char* str) {
+MachineResult WS(char* str) {
 	if(*str == ' ' || *str == '\n' || *str == '\t')
 		while(*str == ' ' || *str == '\n' || *str == '\t')
 			str++;
 	return str;
 }
 
-char* INT(char* str) {
+MachineResult INT(char* str) {
 	char* f = str;
 	int state = 0;
 	while(*f) {
@@ -117,7 +117,7 @@ char* INT(char* str) {
 	}
 }
 
-char* REAL(char* str) {
+MachineResult REAL(char* str) {
 	char* f = str;
 	int state = 0;
 	while(*f) {
@@ -153,7 +153,7 @@ char* REAL(char* str) {
 	}
 }
 
-char* LONGREAL(char* str) {
+MachineResult LONGREAL(char* str) {
 	char* f = str;
 	int state = 0;
 	while(*f) {
@@ -211,14 +211,14 @@ char* LONGREAL(char* str) {
 	}
 }
 
-char* ENDOFFILE(char* str) {
+MachineResult ENDOFFILE(char* str) {
 	if(*str == 4) //end-of-file character
 		return str+1;
 	else
 		return str;
 }
 
-char* CATCHALL(char* str) {
+MachineResult CATCHALL(char* str) {
 	switch(*str) {
 		case '+':
 			//ADDOP, PLUS
@@ -235,12 +235,12 @@ char* CATCHALL(char* str) {
 	}
 }
 
-typedef MachineResult (*machineArr[])(char*) MachineArray;
 
-static MachineArray machines = {&WS, &IDRES, &LONGREAL, &REAL, &INT, &RELOP, &CATCHALL, &ENDOFFILE};
+static Machine machines[] = {&WS, &IDRES, &LONGREAL, &REAL, &INT, &RELOP, &CATCHALL, &ENDOFFILE};
 
 MachineResult identifyToken(char* str) {
-	for(int i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
+	int i;
+	for(i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
 		MachineResult res = machines[i](str);
 		if(res.validToken)
 			return res;
