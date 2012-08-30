@@ -1,15 +1,24 @@
+#include<stdlib.h>
+#include<string.h>
 #include "machines.h"
+#include "types.h"
 MachineResult IDRES(char* str) {
 	char* b = str;
 	char* f = b;
 	int state = 0;
+	MachineResult res;
 	while(*f) {
 		switch(state) {
 		case 0:
 			if('a' <= *f && *f <= 'z' || 'A' <= *f && *f <= 'Z')
 				state = 1;
-			else
-				return b; //*false?
+			else {
+				res.newString = str;
+				res.type = -1;
+				res.attribute = -1;
+				res.validToken = 0;
+				return res;
+			}
 			break;
 		case 1:
 			if('a' <= *f && *f <= 'z' || 'A' <= *f && *f <= 'Z' || '0' <= *f && *f <= '9')
@@ -21,20 +30,21 @@ MachineResult IDRES(char* str) {
 			//valid identifier
 			//Decrement forward pointer, since we consumed a character we shouldn't have
 			f--;
-			return f;
-			break;
+			res.newString = f;
+			res.type = res.attribute = -1;
+			res.validToken = 0;
+			return res;
 		}
 		
 		//increment forward pointer
 		f++;
 	}
-	//We reached end of string.
-	return b; //false?
 }
 
 MachineResult RELOP(char* str) {
 	char* f = str;
 	int state = 0;
+	MachineResult res;
 	while(*f) {
 		switch(state) {
 		case 0:
@@ -53,43 +63,62 @@ MachineResult RELOP(char* str) {
 			else state = 8;
 			break;
 		case 3:
-			//RELOP, EQ
-			return f;
+			res.type = RELOP_EQ;
 			break;
 		case 4:
-			//RELOP, GE
-			return f;
+			res.type = RELOP_GE;
 			break;
 		case 5:
-			//RELOP, GT
-			return f;
+			res.type = RELOP_GT;
 			break;
 		case 6:
-			//RELOP, LE
-			return f;
+			res.type = RELOP_LE;
 			break;
 		case 7:
-			//RELOP, NE
-			return f;
+			res.type = RELOP_NE;
 			break;
 		case 8:
-			//RELOP, LT
-			return f;
+			res.type = RELOP_LT;
 			break;
 		case -1:
-			//error case
-			return str; //false?
+			res.validToken = 0;
+			res.newString = str;
+			res.type = res.attribute = -1;
+			return res;
 		}
 		f++;
 	}
-	return str;
+	if(f > str) {
+		res.validToken = 1;
+		res.type = TYPE_RELOP;
+		res.newString = f;
+	} else {
+		res.validToken = 0;
+		res.newString = str;
+		res.type = res.attribute = -1;
+	}
+	return res;
 }
 
 MachineResult WS(char* str) {
-	if(*str == ' ' || *str == '\n' || *str == '\t')
-		while(*str == ' ' || *str == '\n' || *str == '\t')
-			str++;
-	return str;
+	char* f = str;
+	if(*f == ' ' || *f == '\n' || *f == '\t') {
+		while(*f == ' ' || *f == '\n' || *f == '\t')
+			f++;
+		f--;
+		MachineResult res;
+		res.type = TYPE_WS;
+		res.newString = f;
+		res.validToken = 0;
+		return res;
+	} else {
+		MachineResult res;
+		res.newString = str;
+		res.type = res.attribute = 0;
+		res.validToken = 0;
+		return res;
+	}
+	
 }
 
 MachineResult INT(char* str) {
@@ -111,7 +140,12 @@ MachineResult INT(char* str) {
 				break;
 			case 2:
 				f--;
-				return; //NUM, INT
+				MachineResult res;
+				res.newString = f;
+				res.type = TYPE_NUM;
+				res.attribute = NUM_INT;
+				res.validToken = 1;
+				return res;
 		}
 		f++;
 	}
@@ -147,7 +181,12 @@ MachineResult REAL(char* str) {
 					state = 4;
 			case 4:
 				f--;
-				return; //NUM, REAL
+				MachineResult res;
+				res.newString = f;
+				res.type = TYPE_NUM;
+				res.attribute = NUM_REAL;
+				res.validToken = 1;
+				return res;
 		}
 		f++;
 	}
@@ -205,34 +244,63 @@ MachineResult LONGREAL(char* str) {
 					state = 7;
 			case 7:
 				f--;
-				return f; //NUM, LONGREAL
+				MachineResult res;
+				res.newString = f;
+				res.type = TYPE_NUM;
+				res.attribute = NUM_LONGREAL;
+				res.validToken = 1;
 		}
 		f++;
 	}
 }
 
 MachineResult ENDOFFILE(char* str) {
-	if(*str == 4) //end-of-file character
-		return str+1;
-	else
-		return str;
+	MachineResult res;
+	res.type = TYPE_ENDOFFILE;
+	res.attribute = 0;
+	res.validToken = 1;
+	if(*str == 4) {//end-of-file character
+		res.newString = str+1;
+	} else {
+		res.newString = str;
+		res.validToken = 0;
+	}
+	return res;
 }
 
 MachineResult CATCHALL(char* str) {
+	MachineResult res;
+	res.validToken = 1;
+	res.newString = str+1;
 	switch(*str) {
 		case '+':
-			//ADDOP, PLUS
+			res.type = TYPE_ADDOP;
+			res.attribute = ADDOP_PLUS;
+			return res;
 		case '-':
-			//ADDOP, MINUS
+			res.type = TYPE_ADDOP;
+			res.attribute = ADDOP_MINUS;
+			return res;
 		case '*':
-			//MULOP, TIMES
+			res.type = TYPE_MULOP;
+			res.attribute = MULOP_TIMES;
+			return res;
 		case '/':
-			//MULOP, DIVIDE
+			res.type = TYPE_MULOP;
+			res.attribute = MULOP_DIVIDE;
+			return res;
 		case ':':
-			if(str[1] == '=')
-				//ASSIGNOP, NULL
-				1+1;
+			if(str[1] == '=') {
+				res.type = TYPE_ASSIGNOP;
+				res.attribute = 0;
+				res.newString = str+2;
+				return res;
+			}
 	}
+	res.validToken = 0;
+	res.type = res.attribute = -1;
+	res.newString = str;
+	return res;
 }
 
 
@@ -242,8 +310,19 @@ MachineResult identifyToken(char* str) {
 	int i;
 	for(i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
 		MachineResult res = machines[i](str);
-		if(res.validToken)
+		if(res.validToken) {
+			int size = res.newString - str;
+			res.lexeme = malloc(size*sizeof(char)+1);
+			memcpy(res.lexeme, str, size);
+			res.lexeme[size] = 0;
 			return res;
+		}
 	}
 	//unrecognized token
+	MachineResult res;
+	res.lexeme = NULL;
+	res.newString = str;
+	res.type = res.attribute = -1;
+	res.validToken = 0;
+	return res;
 }
