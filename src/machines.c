@@ -235,4 +235,15 @@ char* CATCHALL(char* str) {
 	}
 }
 
-extern static MachineArray machines = {&WS, &IDRES, &LONGREAL, &REAL, &INT, &RELOP, &CATCHALL, &ENDOFFILE};
+typedef MachineResult (*machineArr[])(char*) MachineArray;
+
+static MachineArray machines = {&WS, &IDRES, &LONGREAL, &REAL, &INT, &RELOP, &CATCHALL, &ENDOFFILE};
+
+MachineResult identifyToken(char* str) {
+	for(int i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
+		MachineResult res = machines[i](str);
+		if(res.validToken)
+			return res;
+	}
+	//unrecognized token
+}
