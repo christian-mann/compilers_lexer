@@ -7,6 +7,8 @@
 #define TYPE_ADDOP 104
 #define TYPE_MULOP 105
 #define TYPE_ASSIGNOP 106
+#define TYPE_PAREN 107
+#define TYPE_OTHER 108
 
 #define RELOP_EQ 1000
 #define RELOP_GE 1001
@@ -24,6 +26,14 @@
 
 #define MULOP_TIMES 1050
 #define MULOP_DIVIDE 1051
+
+#define PAREN_OPEN 1070
+#define PAREN_CLOSE 1071
+
+#define OTHER_COMMA 1080
+#define OTHER_SEMICOLON 1081
+#define OTHER_COLON 1082
+#define OTHER_PERIOD 1083
 
 typedef struct {
 	char* word;

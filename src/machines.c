@@ -7,7 +7,7 @@ MachineResult IDRES(char* str) {
 	char* f = b;
 	int state = 0;
 	MachineResult res;
-	while(*f) {
+	while(1) {
 		switch(state) {
 		case 0:
 			if('a' <= *f && *f <= 'z' || 'A' <= *f && *f <= 'Z')
@@ -31,55 +31,89 @@ MachineResult IDRES(char* str) {
 			//Decrement forward pointer, since we consumed a character we shouldn't have
 			f--;
 			res.newString = f;
-			res.type = res.attribute = -1;
-			res.validToken = 0;
+			res.type = res.attribute = -2; //TODO get from list
+			res.validToken = 1;
 			return res;
 		}
-		
 		//increment forward pointer
 		f++;
 	}
 }
 
+ReservedWord* CheckReservedWords(char* word, ReservedWordList* rwl) {
+	//Search for word in rwl
+	while(rwl != NULL) {
+		if(!strcmp(word, rwl->rword->word)) {
+			//found it!
+			return rwl->rword;
+		} else {
+			//go to next link
+			rwl = rwl->next;
+		}
+	}
+	return NULL;
+}
+
+//SymbolTableEntry* checkSymbolTable(char* word, SymbolTable* tab) {
+//	while(tab != NULL) {
+//		if(!strcmp(word, tab->entry->word)) {
+//			//found it!
+//			return tab->entry;
+//		} else {
+//			//go to next link
+//			tab = tab->next;
+//		}
+//	}
+//}
+
 MachineResult RELOP(char* str) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
-	while(*f) {
+	res.validToken = 1;
+	res.type = TYPE_RELOP;
+	res.newString = f;
+	while(1) {
 		switch(state) {
 		case 0:
+			state = -1;
 			if(*f == '>') state = 1;
 			if(*f == '<') state = 2;
 			if(*f == '=') state = 3;
-			else state = -1;
 			break;
 		case 1:
+			state = 5;
 			if(*f == '=') state = 4;
-			else state = 5;
 			break;
 		case 2:
+			state = 8;
 			if(*f == '=') state = 6;
 			if(*f == '>') state = 7;
-			else state = 8;
 			break;
 		case 3:
-			res.type = RELOP_EQ;
-			break;
+			res.attribute = RELOP_EQ;
+			res.newString = f;
+			return res;
 		case 4:
-			res.type = RELOP_GE;
-			break;
+			res.attribute = RELOP_GE;
+			res.newString = f;
+			return res;
 		case 5:
-			res.type = RELOP_GT;
-			break;
+			res.attribute = RELOP_GT;
+			res.newString = f;
+			return res;
 		case 6:
-			res.type = RELOP_LE;
-			break;
+			res.attribute = RELOP_LE;
+			res.newString = f;
+			return res;
 		case 7:
-			res.type = RELOP_NE;
-			break;
+			res.attribute = RELOP_NE;
+			res.newString = f;
+			return res;
 		case 8:
-			res.type = RELOP_LT;
-			break;
+			res.attribute = RELOP_LT;
+			res.newString = f;
+			return res;
 		case -1:
 			res.validToken = 0;
 			res.newString = str;
@@ -88,63 +122,74 @@ MachineResult RELOP(char* str) {
 		}
 		f++;
 	}
-	if(f > str) {
-		res.validToken = 1;
-		res.type = TYPE_RELOP;
-		res.newString = f;
-	} else {
-		res.validToken = 0;
-		res.newString = str;
-		res.type = res.attribute = -1;
-	}
-	return res;
 }
 
 MachineResult WS(char* str) {
 	char* f = str;
-	if(*f == ' ' || *f == '\n' || *f == '\t') {
-		while(*f == ' ' || *f == '\n' || *f == '\t')
-			f++;
-		f--;
-		MachineResult res;
-		res.type = TYPE_WS;
-		res.newString = f;
-		res.validToken = 0;
-		return res;
-	} else {
-		MachineResult res;
-		res.newString = str;
-		res.type = res.attribute = 0;
-		res.validToken = 0;
-		return res;
-	}
-	
-}
-
-MachineResult INT(char* str) {
-	char* f = str;
 	int state = 0;
-	while(*f) {
+	MachineResult res;
+	while(1) {
 		switch(state) {
 			case 0:
-				if('0' <= *f <= '9')
+				if(*f == ' ' || *f == '\n' || *f == '\t' || *f == '\r')
 					state = 1;
 				else
 					state = -1;
 				break;
 			case 1:
-				if('0' <= *f <= '9')
+				if(*f == ' ' || *f == '\n' || *f == '\t' || *f == '\r')
 					state = 1;
 				else
 					state = 2;
 				break;
 			case 2:
 				f--;
-				MachineResult res;
+				res.newString = f;
+				res.type = TYPE_WS;
+				res.attribute = 0;
+				res.validToken = 1;
+				return res;
+			case -1:
+				res.newString = str;
+				res.type = res.attribute = -1;
+				res.validToken = 0;
+				return res;
+		}
+		f++;
+	}
+}
+
+MachineResult INT(char* str) {
+	char* f = str;
+	int state = 0;
+	MachineResult res;
+	while(1) {
+		switch(state) {
+			case 0:
+				if('0' <= *f && *f <= '9')
+					state = 1;
+				else
+					state = -1;
+				break;
+			case 1:
+				if('0' <= *f && *f <= '9')
+					state = 1;
+				else {
+					state = 2;
+				}
+				break;
+			case 2:
+				f--;
 				res.newString = f;
 				res.type = TYPE_NUM;
 				res.attribute = NUM_INT;
 				res.validToken = 1;
+				return res;
+			case -1:
+				res.newString = str;
+				res.type = -1;
+				res.attribute = -1;
+				res.validToken = 0;
 				return res;
 		}
 		f++;
@@ -154,38 +199,47 @@ MachineResult INT(char* str) {
 MachineResult REAL(char* str) {
 	char* f = str;
 	int state = 0;
-	while(*f) {
+	MachineResult res;
+	while(1) {
 		switch(state) {
 			case 0:
-				if('0' <= *f <= '9')
+				if('0' <= *f && *f <= '9')
 					state = 1;
 				else
 					state = -1;
 				break;
 			case 1:
-				if('0' <= *f <= '9')
+				if('0' <= *f && *f <= '9')
 					state = 1;
 				else if (*f == '.')
 					state = 2;
 				else
 					state = -1;
+				break;
 			case 2:
-				if('0' <= *f <= '9')
+				if('0' <= *f && *f <= '9')
 					state = 3;
 				else
 					state = -1;
+				break;
 			case 3:
-				if('0' <= *f <= '9')
+				if('0' <= *f && *f <= '9')
 					state = 3;
 				else
 					state = 4;
+				break;
 			case 4:
 				f--;
-				MachineResult res;
 				res.newString = f;
 				res.type = TYPE_NUM;
 				res.attribute = NUM_REAL;
 				res.validToken = 1;
+				return res;
+			case -1:
+				res.newString = str;
+				res.type = -1;
+				res.attribute = -1;
+				res.validToken = 0;
 				return res;
 		}
 		f++;
@@ -195,7 +249,8 @@ MachineResult REAL(char* str) {
 MachineResult LONGREAL(char* str) {
 	char* f = str;
 	int state = 0;
-	while(*f) {
+	MachineResult res;
+	while(1) {
 		switch(state) {
 			case 0:
 				if('0' <= *f && *f <= '9')
@@ -232,23 +287,32 @@ MachineResult LONGREAL(char* str) {
 					state = 6;
 				else
 					state = -1;
+				break;
 			case 5:
 				if('1' <= *f && *f <= '9')
 					state = 6;
 				else
 					state = -1;
+				break;
 			case 6:
 				if('1' <= *f && *f <= '9')
 					state = 6;
 				else
 					state = 7;
+				break;
 			case 7:
 				f--;
-				MachineResult res;
 				res.newString = f;
 				res.type = TYPE_NUM;
 				res.attribute = NUM_LONGREAL;
 				res.validToken = 1;
+				return res;
+			case -1:
+				res.newString = str;
+				res.type = -1;
+				res.attribute = -1;
+				res.validToken = 0;
+				return res;
 		}
 		f++;
 	}
@@ -273,6 +337,26 @@ MachineResult CATCHALL(char* str) {
 	res.validToken = 1;
 	res.newString = str+1;
 	switch(*str) {
+		case '(':
+			res.type = TYPE_PAREN;
+			res.attribute = PAREN_OPEN;
+			return res;
+		case ')':
+			res.type = TYPE_PAREN;
+			res.attribute = PAREN_CLOSE;
+			return res;
+		case ',':
+			res.type = TYPE_OTHER;
+			res.attribute = OTHER_COMMA;
+			return res;
+		case ';':
+			res.type = TYPE_OTHER;
+			res.attribute = OTHER_SEMICOLON;
+			return res;
+		case '.':
+			res.type = TYPE_OTHER;
+			res.attribute = OTHER_PERIOD;
+			return res;
 		case '+':
 			res.type = TYPE_ADDOP;
 			res.attribute = ADDOP_PLUS;
@@ -294,6 +378,10 @@ MachineResult CATCHALL(char* str) {
 				res.type = TYPE_ASSIGNOP;
 				res.attribute = 0;
 				res.newString = str+2;
+				return res;
+			} else {
+				res.type = TYPE_OTHER;
+				res.attribute = OTHER_COLON;
 				return res;
 			}
 	}
