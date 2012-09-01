@@ -2,7 +2,8 @@
 #include<string.h>
 #include "machines.h"
 #include "types.h"
-MachineResult IDRES(char* str) {
+
+MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* b = str;
 	char* f = b;
 	int state = 0;
@@ -54,19 +55,19 @@ ReservedWord* CheckReservedWords(char* word, ReservedWordList* rwl) {
 	return NULL;
 }
 
-//SymbolTableEntry* checkSymbolTable(char* word, SymbolTable* tab) {
-//	while(tab != NULL) {
-//		if(!strcmp(word, tab->entry->word)) {
-//			//found it!
-//			return tab->entry;
-//		} else {
-//			//go to next link
-//			tab = tab->next;
-//		}
-//	}
-//}
+SymbolTableEntry* checkSymbolTable(char* word, SymbolTable* tab) {
+	while(tab != NULL) {
+		if(!strcmp(word, tab->entry->word)) {
+			//found it!
+			return tab->entry;
+		} else {
+			//go to next link
+			tab = tab->next;
+		}
+	}
+}
 
-MachineResult RELOP(char* str) {
+MachineResult RELOP(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
@@ -124,7 +125,7 @@ MachineResult RELOP(char* str) {
 	}
 }
 
-MachineResult WS(char* str) {
+MachineResult WS(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
@@ -159,7 +160,7 @@ MachineResult WS(char* str) {
 	}
 }
 
-MachineResult INT(char* str) {
+MachineResult INT(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
@@ -196,7 +197,7 @@ MachineResult INT(char* str) {
 	}
 }
 
-MachineResult REAL(char* str) {
+MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
@@ -246,7 +247,7 @@ MachineResult REAL(char* str) {
 	}
 }
 
-MachineResult LONGREAL(char* str) {
+MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
@@ -318,7 +319,7 @@ MachineResult LONGREAL(char* str) {
 	}
 }
 
-MachineResult ENDOFFILE(char* str) {
+MachineResult ENDOFFILE(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	MachineResult res;
 	res.type = TYPE_ENDOFFILE;
 	res.attribute = 0;
@@ -332,7 +333,7 @@ MachineResult ENDOFFILE(char* str) {
 	return res;
 }
 
-MachineResult CATCHALL(char* str) {
+MachineResult CATCHALL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	MachineResult res;
 	res.validToken = 1;
 	res.newString = str+1;
@@ -394,10 +395,10 @@ MachineResult CATCHALL(char* str) {
 
 static Machine machines[] = {&WS, &IDRES, &LONGREAL, &REAL, &INT, &RELOP, &CATCHALL, &ENDOFFILE};
 
-MachineResult identifyToken(char* str) {
+MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	int i;
 	for(i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
-		MachineResult res = machines[i](str);
+		MachineResult res = machines[i](str, rwl, symbtab);
 		if(res.validToken) {
 			int size = res.newString - str;
 			res.lexeme = malloc(size*sizeof(char)+1);
