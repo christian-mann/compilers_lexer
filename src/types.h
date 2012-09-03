@@ -12,6 +12,7 @@
 #define TYPE_ASSIGNOP 106
 #define TYPE_PAREN 107
 #define TYPE_OTHER 108
+#define TYPE_ID 109
 
 #define RELOP_EQ 1000
 #define RELOP_GE 1001

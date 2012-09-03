@@ -3,6 +3,8 @@
 #include "machines.h"
 #include "types.h"
 
+ReservedWord* CheckReservedWords(char*, ReservedWordList*);
+SymbolTableEntry* checkSymbolTable(char*, SymbolTable*);
 MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* b = str;
 	char* f = b;
@@ -32,8 +34,25 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			//Decrement forward pointer, since we consumed a character we shouldn't have
 			f--;
 			res.newString = f;
-			res.type = res.attribute = -2; //TODO get from list
-			res.validToken = 1;
+			char *lex = malloc((f-str)*sizeof(char)+1);
+			memcpy(lex, str, f-str);
+			lex[f-str] = 0;
+			ReservedWord *possResWord = CheckReservedWords(lex, rwl);
+			if(possResWord) {
+				res.type = possResWord->type;
+				res.attribute = possResWord->attribute;
+				res.validToken = 1;
+			} else {
+				//check length
+				if((f-str) <= 10) {
+					//It is a valid identifier
+					SymbolTableEntry* entry = checkSymbolTable(lex, symbtab);
+					res.validToken = 1;
+				} else {
+					res.validToken = 0;
+				}
+			}
+			free(lex);
 			return res;
 		}
 		//increment forward pointer
@@ -43,7 +62,7 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 
 ReservedWord* CheckReservedWords(char* word, ReservedWordList* rwl) {
 	//Search for word in rwl
-	while(rwl != NULL) {
+	while(rwl != NULL && rwl->rword != NULL) {
 		if(!strcmp(word, rwl->rword->word)) {
 			//found it!
 			return rwl->rword;
@@ -56,7 +75,7 @@ ReservedWord* CheckReservedWords(char* word, ReservedWordList* rwl) {
 }
 
 SymbolTableEntry* checkSymbolTable(char* word, SymbolTable* tab) {
-	while(tab != NULL) {
+	while(tab != NULL && tab->entry != NULL) {
 		if(!strcmp(word, tab->entry->word)) {
 			//found it!
 			return tab->entry;
