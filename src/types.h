@@ -1,5 +1,8 @@
 #include<stdio.h>
 
+#ifndef TYPES_H
+#define TYPES_H
+
 #define TYPE_RELOP 100
 #define TYPE_WS 101
 #define TYPE_NUM 102
@@ -47,3 +50,5 @@ typedef struct rwordll {
 } ReservedWordList;
 
 ReservedWordList parseResWordFile(FILE* fp);
+
+#endif

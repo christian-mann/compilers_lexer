@@ -398,7 +398,7 @@ static Machine machines[] = {&WS, &IDRES, &LONGREAL, &REAL, &INT, &RELOP, &CATCH
 MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	int i;
 	for(i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
-		MachineResult res = machines[i](str, rwl, symbtab);
+		MachineResult res = (*(machines[i]))(str, rwl, symbtab);
 		if(res.validToken) {
 			int size = res.newString - str;
 			res.lexeme = malloc(size*sizeof(char)+1);

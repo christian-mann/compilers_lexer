@@ -21,6 +21,12 @@ int main(int argc, char **argv) {
 		fSrc = stdin;
 	}
 
+	//create symbol table
+	SymbolTable *symbtab = malloc(sizeof(SymbolTable));
+
+	//read in reserved word list
+	ReservedWordList *rwl = malloc(sizeof(ReservedWordList));
+
 	//begin reading a line at a time
 	char sLine[80];
 	int cLine = 1;
@@ -32,9 +38,9 @@ int main(int argc, char **argv) {
 		//split line into tokens
 		char *psLine = sLine;
 		while(psLine < sLine + length) {
-			MachineResult res = identifyToken(psLine);
+			MachineResult res = identifyToken(psLine, rwl, symbtab);
 			if(res.validToken)
-				printf("Token: '%s'\n", res.lexeme);
+				printf("Token: '%s', type: %d, attribute: %d\n", res.lexeme, res.type, res.attribute);
 			else {
 				printf("INVALID TOKEN OMG -- string = '%s'\n", psLine);
 				break;

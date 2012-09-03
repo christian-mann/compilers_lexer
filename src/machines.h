@@ -1,3 +1,5 @@
+#include "types.h"
+
 typedef struct {
 	char* lexeme;
 	char* newString;
@@ -6,8 +8,6 @@ typedef struct {
 	int validToken;
 } MachineResult;
 
-MachineResult identifyToken(char* str);
-typedef MachineResult (*Machine)(char*);
 
 typedef struct {
 	char* word;
@@ -17,3 +17,6 @@ typedef struct symbtab {
 	SymbolTableEntry* entry;
 	struct symbtab* next;
 } SymbolTable;
+
+MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbtab);
+typedef MachineResult (*Machine)(char*, ReservedWordList*, SymbolTable*);
