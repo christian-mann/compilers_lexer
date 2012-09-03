@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 			MachineResult res = identifyToken(psLine, rwl, symbtab);
 			if(res.validToken) {
 				if(res.type != TYPE_WS) { //we don't care about whitespace
-					printf("Token: '%s', type: %d, attribute: %d, error: %d\n", res.lexeme, res.type, res.attribute, res.error);
+					printf("%s\t%s\t%s\t%s\n", res.lexeme, convertConstantToString(res.type), convertConstantToString(res.attribute), convertConstantToString(res.error));
 				}
 			} else {
 				printf("INVALID TOKEN OMG -- string = '%s'\n", psLine);
