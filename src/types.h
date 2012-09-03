@@ -56,7 +56,7 @@ typedef struct rwordll {
 	struct rwordll* next;
 } ReservedWordList;
 
-ReservedWordList parseResWordFile(FILE* fp);
+ReservedWordList* parseResWordFile(FILE* fp);
 char* convertConstantToString(int);
 
 #endif

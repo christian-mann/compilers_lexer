@@ -2,8 +2,8 @@
 #include<stdlib.h>
 #include "types.h"
 
-ReservedWordList parseResWordFile(FILE* fp) {
-	ReservedWordList list;
+ReservedWordList* parseResWordFile(FILE* fp) {
+	ReservedWordList *list = malloc(sizeof(ReservedWordList));
 	ReservedWordList *hare = &list;
 
 	while(!feof(fp)) {
