@@ -32,16 +32,18 @@ int main(int argc, char **argv) {
 	int cLine = 1;
 	while(fgets(sLine, sizeof(sLine), fSrc) != NULL && !feof(fSrc)) {
 		int length = strlen(sLine);
-		printf("%d. %s\n", cLine, sLine);
+		printf("%d. %s", cLine, sLine);
 		cLine++;
 
 		//split line into tokens
 		char *psLine = sLine;
 		while(psLine < sLine + length) {
 			MachineResult res = identifyToken(psLine, rwl, symbtab);
-			if(res.validToken)
-				printf("Token: '%s', type: %d, attribute: %d\n", res.lexeme, res.type, res.attribute);
-			else {
+			if(res.validToken) {
+				if(res.type != TYPE_WS) { //we don't care about whitespace
+					printf("Token: '%s', type: %d, attribute: %d\n", res.lexeme, res.type, res.attribute);
+				}
+			} else {
 				printf("INVALID TOKEN OMG -- string = '%s'\n", psLine);
 				break;
 			}
