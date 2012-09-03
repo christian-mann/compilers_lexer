@@ -39,6 +39,12 @@
 #define OTHER_COLON 1082
 #define OTHER_PERIOD 1083
 
+#define ERR_ID_LEN 200
+#define ERR_INT_LEN 201
+#define ERR_INT_LEADING_ZERO 202
+#define ERR_DECIMAL_LEN 203
+#define ERR_EXPONENT_LEN 204
+
 typedef struct {
 	char* word;
 	int type;

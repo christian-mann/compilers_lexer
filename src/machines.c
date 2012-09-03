@@ -43,13 +43,12 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.attribute = possResWord->attribute;
 				res.validToken = 1;
 			} else {
-				//check length
-				if((f-str) <= 10) {
-					//It is a valid identifier
-					SymbolTableEntry* entry = checkSymbolTable(lex, symbtab);
-					res.validToken = 1;
-				} else {
-					res.validToken = 0;
+				SymbolTableEntry* entry = checkSymbolTable(lex, symbtab);
+				res.type = TYPE_ID;
+				res.attribute = 0;
+				res.validToken = 1;
+				if((f-str) > 10) {
+					res.error = ERR_ID_LEN;
 				}
 			}
 			free(lex);
@@ -204,6 +203,12 @@ MachineResult INT(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.type = TYPE_NUM;
 				res.attribute = NUM_INT;
 				res.validToken = 1;
+				if((f-str) > 10) {
+					res.error = ERR_INT_LEN;
+				}
+				if(*str = '0' && (f-str) > 1) {
+					res.error = ERR_INT_LEADING_ZERO;
+				}
 				return res;
 			case -1:
 				res.newString = str;
@@ -220,6 +225,7 @@ MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
+	char* pDot;
 	while(1) {
 		switch(state) {
 			case 0:
@@ -231,9 +237,10 @@ MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			case 1:
 				if('0' <= *f && *f <= '9')
 					state = 1;
-				else if (*f == '.')
+				else if (*f == '.') {
+					pDot = f;
 					state = 2;
-				else
+				} else
 					state = -1;
 				break;
 			case 2:
@@ -254,6 +261,12 @@ MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.type = TYPE_NUM;
 				res.attribute = NUM_REAL;
 				res.validToken = 1;
+				if((pDot-str) > 5) {
+					res.error = ERR_INT_LEN;
+				}
+				if((f-pDot) > 5) {
+					res.error = ERR_DECIMAL_LEN;
+				}
 				return res;
 			case -1:
 				res.newString = str;
@@ -270,6 +283,7 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
+	char* pDot, *pE;
 	while(1) {
 		switch(state) {
 			case 0:
@@ -281,9 +295,10 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			case 1:
 				if('0' <= *f && *f <= '9')
 					state = 1;
-				else if (*f == '.')
+				else if (*f == '.') {
+					pDot = f;
 					state = 2;
-				else
+				} else
 					state = -1;
 				break;
 			case 2:
@@ -295,9 +310,10 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			case 3:
 				if('0' <= *f && *f <= '9')
 					state = 3;
-				else if (*f == 'E')
+				else if (*f == 'E') {
+					pE = f;
 					state = 4;
-				else
+				} else
 					state = -1;
 				break;
 			case 4:
@@ -326,6 +342,15 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.type = TYPE_NUM;
 				res.attribute = NUM_LONGREAL;
 				res.validToken = 1;
+				if((pDot-str) > 5) {
+					res.error = ERR_INT_LEN;
+				}
+				if((pE-pDot) > 5) {
+					res.error = ERR_DECIMAL_LEN;
+				}
+				if((f-pE) > 2) {
+					res.error = ERR_EXPONENT_LEN;
+				}
 				return res;
 			case -1:
 				res.newString = str;
@@ -418,6 +443,8 @@ MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbt
 	int i;
 	for(i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
 		MachineResult res = (*(machines[i]))(str, rwl, symbtab);
+		if(res.error == 32767) //todo fix
+			res.error = 0;
 		if(res.validToken) {
 			int size = res.newString - str;
 			res.lexeme = malloc(size*sizeof(char)+1);

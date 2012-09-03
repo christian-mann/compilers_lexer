@@ -6,6 +6,7 @@ typedef struct {
 	int type;
 	int attribute;
 	int validToken;
+	int error;
 } MachineResult;
 
 
