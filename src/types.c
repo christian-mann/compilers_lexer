@@ -4,7 +4,7 @@
 
 ReservedWordList* parseResWordFile(FILE* fp) {
 	ReservedWordList *list = malloc(sizeof(ReservedWordList));
-	ReservedWordList *hare = &list;
+	ReservedWordList *hare = list;
 
 	while(!feof(fp)) {
 		ReservedWord *rw = malloc(sizeof(ReservedWord));
