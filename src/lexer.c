@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
 
 	//create symbol table
 	SymbolTable *symbtab = malloc(sizeof(SymbolTable));
+	symbtab->entry = NULL;
 
 	//read in reserved word list
 	ReservedWordList *rwl;
