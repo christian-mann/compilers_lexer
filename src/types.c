@@ -1,23 +1,32 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include "types.h"
 
 ReservedWordList* parseResWordFile(FILE* fp) {
 	ReservedWordList *list = malloc(sizeof(ReservedWordList));
 	ReservedWordList *hare = list;
 
-	while(!feof(fp)) {
+	char word[11];
+	int type;
+	int attribute;
+	while(fscanf(fp, "%s %d %d", word, &type, &attribute) != EOF) {
 		ReservedWord *rw = malloc(sizeof(ReservedWord));
-		fscanf(fp, "%s %d %d", &rw->word, &rw->type, &rw->attribute);
+		rw->word = malloc((strlen(word) + 1)*sizeof(char));
+		strcpy(rw->word, word);
+		rw->type = type;
+		rw->attribute = attribute;
+
 		hare->rword = rw;
 		hare->next = malloc(sizeof(ReservedWordList));
+		hare->next->rword = NULL;
 		hare = hare->next;
 	}
-
 	return list;
 }
 
 char* convertConstantToString(int constant) {
+	if(constant < 50 && constant > 0) return "RWORD";
 	switch(constant) {
 	case TYPE_RELOP: return "TYPE_RELOP";
 	case TYPE_WS: return "TYPE_WS";
