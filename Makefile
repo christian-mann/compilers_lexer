@@ -1,5 +1,5 @@
 all:
-	gcc src/*.c -o bin/lexer
+	gcc -g src/*.c -o bin/lexer
 
 bin/lexer.o: src/lexer.c
 	gcc -c src/lexer.c -o bin/lexer.o
