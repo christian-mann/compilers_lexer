@@ -63,6 +63,9 @@ char* convertConstantToString(int constant) {
 	case ERR_DECIMAL_LEN: return "ERR_DECIMAL_LEN";
 	case ERR_EXPONENT_LEN: return "ERR_EXPONENT_LEN";
 	case 0: return "NULL";
-	default: return "UNDEFINED";
 	}
+	//symbol pointers
+	char *str = malloc(40*sizeof(char)); //that should be more than sufficient
+	sprintf(str, "%p", constant);
+	return str;
 }

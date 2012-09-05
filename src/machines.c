@@ -45,7 +45,7 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			} else {
 				SymbolTableEntry* entry = checkSymbolTable(lex, symbtab);
 				res.type = TYPE_ID;
-				res.attribute = 0;
+				res.attribute = (int)entry;
 				res.validToken = 1;
 				if((f-str) > 10) {
 					res.error = ERR_ID_LEN;
