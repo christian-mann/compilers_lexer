@@ -74,13 +74,21 @@ ReservedWord* CheckReservedWords(char* word, ReservedWordList* rwl) {
 }
 
 SymbolTableEntry* checkSymbolTable(char* word, SymbolTable* tab) {
-	while(tab != NULL && tab->entry != NULL) {
-		if(!strcmp(word, tab->entry->word)) {
+	while(1) {
+		if(!tab->entry) {
+			tab->entry = malloc(sizeof(SymbolTableEntry));
+			tab->entry->word = word;
+			return tab->entry;
+		} else if(!strcmp(word, tab->entry->word)) {
 			//found it!
 			return tab->entry;
 		} else {
 			//go to next link
-			tab = tab->next;
+			if(!tab->next) {
+				//make new link
+				tab->next = malloc(sizeof(SymbolTable));
+			}
+			return checkSymbolTable(word, tab->next);
 		}
 	}
 }
