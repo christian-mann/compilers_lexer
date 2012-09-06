@@ -13,6 +13,7 @@
 #define TYPE_PAREN 107
 #define TYPE_OTHER 108
 #define TYPE_ID 109
+#define TYPE_LEXERR 200
 
 #define RELOP_EQ 1000
 #define RELOP_GE 1001
@@ -39,11 +40,11 @@
 #define OTHER_COLON 1082
 #define OTHER_PERIOD 1083
 
-#define ERR_ID_LEN 200
-#define ERR_INT_LEN 201
-#define ERR_INT_LEADING_ZERO 202
-#define ERR_DECIMAL_LEN 203
-#define ERR_EXPONENT_LEN 204
+#define ERR_ID_LEN 2000
+#define ERR_INT_LEN 2001
+#define ERR_INT_LEADING_ZERO 2002
+#define ERR_DECIMAL_LEN 2003
+#define ERR_EXPONENT_LEN 2004
 
 typedef struct {
 	char* word;

@@ -38,6 +38,7 @@ char* convertConstantToString(int constant) {
 	case TYPE_PAREN: return "TYPE_PAREN";
 	case TYPE_OTHER: return "TYPE_OTHER";
 	case TYPE_ID: return "TYPE_ID";
+	case TYPE_LEXERR: return "TYPE_LEXERR";
 	case RELOP_EQ: return "RELOP_EQ";
 	case RELOP_GE: return "RELOP_GE";
 	case RELOP_GT: return "RELOP_GT";

@@ -48,7 +48,8 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.attribute = (int)entry;
 				res.validToken = 1;
 				if((f-str) > 10) {
-					res.error = ERR_ID_LEN;
+					res.type = TYPE_LEXERR;
+					res.error = res.attribute = ERR_ID_LEN;
 				}
 			}
 			free(lex);
@@ -212,10 +213,12 @@ MachineResult INT(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.attribute = NUM_INT;
 				res.validToken = 1;
 				if((f-str) > 10) {
-					res.error = ERR_INT_LEN;
+					res.type = TYPE_LEXERR;
+					res.error = res.attribute = ERR_INT_LEN;
 				}
 				if(*str = '0' && (f-str) > 1) {
-					res.error = ERR_INT_LEADING_ZERO;
+					res.type = TYPE_LEXERR;
+					res.error = res.attribute = ERR_INT_LEADING_ZERO;
 				}
 				return res;
 			case -1:
@@ -270,10 +273,12 @@ MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.attribute = NUM_REAL;
 				res.validToken = 1;
 				if((pDot-str) > 5) {
-					res.error = ERR_INT_LEN;
+					res.type = TYPE_LEXERR;
+					res.error = res.attribute = ERR_INT_LEN;
 				}
 				if((f-pDot) > 5) {
-					res.error = ERR_DECIMAL_LEN;
+					res.type = TYPE_LEXERR;
+					res.error = res.attribute = ERR_DECIMAL_LEN;
 				}
 				return res;
 			case -1:
@@ -351,13 +356,16 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.attribute = NUM_LONGREAL;
 				res.validToken = 1;
 				if((pDot-str) > 5) {
-					res.error = ERR_INT_LEN;
+					res.type = TYPE_LEXERR;
+					res.error = res.attribute = ERR_INT_LEN;
 				}
 				if((pE-pDot) > 5) {
-					res.error = ERR_DECIMAL_LEN;
+					res.type = TYPE_LEXERR;
+					res.error = res.attribute = ERR_DECIMAL_LEN;
 				}
 				if((f-pE) > 2) {
-					res.error = ERR_EXPONENT_LEN;
+					res.type = TYPE_LEXERR;
+					res.error = res.attribute = ERR_EXPONENT_LEN;
 				}
 				return res;
 			case -1:
@@ -451,7 +459,7 @@ MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbt
 	int i;
 	for(i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
 		MachineResult res = (*(machines[i]))(str, rwl, symbtab);
-		if(res.error == 32767) //todo fix
+		if(res.error == 32767) //default value
 			res.error = 0;
 		if(res.validToken) {
 			int size = res.newString - str;
