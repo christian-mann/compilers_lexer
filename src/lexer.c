@@ -8,8 +8,8 @@
 
 int main(int argc, char **argv) {
 	//open the files given as an argument
-	char *sfSrc, *sfListing, *sfToken, *sfReservedWords;
-	FILE *fSrc, *fListing, *fToken, *fReservedWords;
+	char *sfSrc, *sfListing, *sfToken, *sfSymbolTable, *sfReservedWords;
+	FILE *fSrc, *fListing, *fToken, *fSymbolTable, *fReservedWords;
 	sfSrc = sfListing = sfToken = NULL;
 
 	// format: ./a.out -r sfReservedWords [-l sfListing] [-t sfToken] [[-s] sfSrc]
@@ -21,24 +21,34 @@ int main(int argc, char **argv) {
 		if(!strcmp(argv[i], "-t")) {
 			sfToken = argv[i+1];
 		}
-		if(!strcmp(argv[i], "-s") || i == argc - 2) {
-			sfSrc = argv[i+1];
-		}
 		if(!strcmp(argv[i], "-r")) {
 			sfReservedWords = argv[i+1];
 		}
+		if(!strcmp(argv[i], "-s")) {
+			sfSymbolTable = argv[i+1];
+		}
+		if(i == argc-1) {
+			sfSrc = argv[i];
+		}
 	}
 	if(!sfSrc || (fSrc = fopen(sfSrc, "r")) == NULL) {
-		fprintf(stderr, "Warning: source file not given or not found, using stdin\n");
+		fprintf(stderr, "Warning: source file not given or not found, using stdin.\n");
 		fSrc = stdin;
 	}
 	if(!sfToken || (fToken = fopen(sfToken, "w")) == NULL) {
-		fprintf(stderr, "Warning: token file not given or not found, using stdout\n");
+		fprintf(stderr, "Warning: token file not given or not found, using stdout.\n");
 		fToken = stdout;
 	}
 	if(!sfReservedWords || (fReservedWords = fopen(sfReservedWords, "r")) == NULL) {
-		fprintf(stderr, "Warning: reserved word file not given or not found, not using reserved words\n");
+		fprintf(stderr, "Warning: reserved word file not given or not found, not using reserved words.\n");
 	}
+	if(!sfSymbolTable || (fSymbolTable = fopen(sfSymbolTable, "w")) == NULL) {
+		fprintf(stderr, "Warning: symbol table file not given or not found, not outputting symbol table.\n");
+	}
+	if(!sfListing || (fListing = fopen(sfListing, "w")) == NULL) {
+		fprintf(stderr, "Warning: listing file not given or not found, not outputting listing.\n");
+	}
+
 
 	//create symbol table
 	SymbolTable *symbtab = malloc(sizeof(SymbolTable));
@@ -57,23 +67,28 @@ int main(int argc, char **argv) {
 	int cLine = 1;
 	while(fgets(sLine, sizeof(sLine), fSrc) != NULL && !feof(fSrc)) {
 		int length = strlen(sLine);
-		printf("%d. %s", cLine, sLine);
+		fprintf(fListing, "%d\t%s", cLine, sLine);
 		cLine++;
 
 		//split line into tokens
 		char *psLine = sLine;
-		while(psLine < sLine + length) {
+		while(psLine < sLine + length && fToken) {
 			MachineResult res = identifyToken(psLine, rwl, symbtab);
-			if(res.validToken) {
-				if(res.type != TYPE_WS) { //we don't care about whitespace
-					printf("%s\t%s\t%s\t%s\n", res.lexeme, convertConstantToString(res.type), convertConstantToString(res.attribute), convertConstantToString(res.error));
-				}
-			} else {
-				printf("INVALID TOKEN OMG -- string = '%s'\n", psLine);
-				break;
+			if(res.type != TYPE_WS) { //we don't care about whitespace
+				fprintf(fToken, "%d\t%s\t%d(%s)\t%d(%s)\n", cLine, res.lexeme, res.type, convertConstantToString(res.type), res.attribute, convertConstantToString(res.attribute));
+			}
+			if(res.error && fListing) {
+				fprintf(fListing, "%s:\t%s:\t%s\n", convertConstantToString(res.type), convertConstantToString(res.attribute), res.lexeme);
 			}
 			psLine = res.newString;
 			free(res.lexeme);
+		}
+	}
+
+	//print symbol table
+	if(fSymbolTable) {
+		for(SymbolTable* s = symbtab; s && s->entry && s->entry->word; s = s->next) {
+			fprintf(fSymbolTable, "%s\t%p\n", s->entry->word, s->entry);
 		}
 	}
 }
