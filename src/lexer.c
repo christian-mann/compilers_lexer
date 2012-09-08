@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 	while(fgets(sLine, sizeof(sLine), fSrc) != NULL && !feof(fSrc)) {
 		int length = strlen(sLine);
 		fprintf(fListing, "%d\t%s", cLine, sLine);
-		cLine++;
+
 
 		//split line into tokens
 		char *psLine = sLine;
@@ -85,6 +85,7 @@ int main(int argc, char **argv) {
 			psLine = res.newString;
 			free(res.lexeme);
 		}
+		cLine++;
 	}
 
 	//print symbol table
