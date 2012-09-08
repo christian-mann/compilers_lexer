@@ -217,7 +217,7 @@ MachineResult INT(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 					res.type = TYPE_LEXERR;
 					res.error = res.attribute = ERR_INT_LEN;
 				}
-				if(*str = '0' && (f-str) > 1) {
+				if(*str == '0' && (f-str) > 1) {
 					res.type = TYPE_LEXERR;
 					res.error = res.attribute = ERR_INT_LEADING_ZERO;
 				}
@@ -277,7 +277,7 @@ MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 					res.type = TYPE_LEXERR;
 					res.error = res.attribute = ERR_INT_LEN;
 				}
-				if((f-pDot) > 5) {
+				if(((f-1)-pDot) > 5) {
 					res.type = TYPE_LEXERR;
 					res.error = res.attribute = ERR_DECIMAL_LEN;
 				}
@@ -294,10 +294,10 @@ MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 }
 
 MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
-	char* f = str;
+	char *f = str;
 	int state = 0;
 	MachineResult res;
-	char* pDot, *pE;
+	char *pDot, *pE, *pSign = NULL;
 	while(1) {
 		switch(state) {
 			case 0:
@@ -331,9 +331,10 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 					state = -1;
 				break;
 			case 4:
-				if(*f == '+' || *f == '-')
+				if(*f == '+' || *f == '-') {
+					pSign = f;
 					state = 5;
-				else if('1' <= *f && *f <= '9')
+				} else if('1' <= *f && *f <= '9')
 					state = 6;
 				else
 					state = -1;
@@ -360,11 +361,11 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 					res.type = TYPE_LEXERR;
 					res.error = res.attribute = ERR_INT_LEN;
 				}
-				if((pE-pDot) > 5) {
+				if(((pE-1)-pDot) > 5) {
 					res.type = TYPE_LEXERR;
 					res.error = res.attribute = ERR_DECIMAL_LEN;
 				}
-				if((f-pE) > 2) {
+				if(!pSign && ((f-1)-pE) > 2 || pSign && ((f-1)-pE) > 3) {
 					res.type = TYPE_LEXERR;
 					res.error = res.attribute = ERR_EXPONENT_LEN;
 				}
