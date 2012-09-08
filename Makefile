@@ -1,5 +1,5 @@
 all:
-	gcc -g -std=c99 src/*.c -o bin/lexer
+	gcc -Wall -g -std=c99 src/*.c -o bin/lexer
 
 bin/lexer.o: src/lexer.c
 	gcc -c src/lexer.c -o bin/lexer.o
