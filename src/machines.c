@@ -48,8 +48,7 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.attribute = (int)entry;
 				res.validToken = 1;
 				if((f-str) > 10) {
-					res.type = TYPE_LEXERR;
-					res.error = res.attribute = ERR_ID_LEN;
+					res.error = ERR_ID_LEN;
 				}
 			}
 			free(lex);
@@ -214,12 +213,10 @@ MachineResult INT(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.attribute = NUM_INT;
 				res.validToken = 1;
 				if((f-str) > 10) {
-					res.type = TYPE_LEXERR;
-					res.error = res.attribute = ERR_INT_LEN;
+					res.error = ERR_INT_LEN;
 				}
 				if(*str == '0' && (f-str) > 1) {
-					res.type = TYPE_LEXERR;
-					res.error = res.attribute = ERR_INT_LEADING_ZERO;
+					res.error = ERR_INT_LEADING_ZERO;
 				}
 				return res;
 			case -1:
@@ -274,12 +271,10 @@ MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.attribute = NUM_REAL;
 				res.validToken = 1;
 				if((pDot-str) > 5) {
-					res.type = TYPE_LEXERR;
-					res.error = res.attribute = ERR_INT_LEN;
+					res.error = ERR_INT_LEN;
 				}
 				if(((f-1)-pDot) > 5) {
-					res.type = TYPE_LEXERR;
-					res.error = res.attribute = ERR_DECIMAL_LEN;
+					res.error = ERR_DECIMAL_LEN;
 				}
 				return res;
 			case -1:
@@ -334,15 +329,21 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				if(*f == '+' || *f == '-') {
 					pSign = f;
 					state = 5;
-				} else if('1' <= *f && *f <= '9')
+				} else if('1' <= *f && *f <= '9') {
 					state = 6;
-				else
+				} else if('0' == *f) {
+					res.error = ERR_EXPONENT_LEADING_ZERO;
+					state = 6;
+				} else
 					state = -1;
 				break;
 			case 5:
 				if('1' <= *f && *f <= '9')
 					state = 6;
-				else
+				else if('0' == *f) {
+					state = 6;
+					res.error = ERR_EXPONENT_LEADING_ZERO;
+				} else
 					state = -1;
 				break;
 			case 6:
@@ -358,16 +359,13 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.attribute = NUM_LONGREAL;
 				res.validToken = 1;
 				if((pDot-str) > 5) {
-					res.type = TYPE_LEXERR;
-					res.error = res.attribute = ERR_INT_LEN;
+					res.error = ERR_INT_LEN;
 				}
 				if(((pE-1)-pDot) > 5) {
-					res.type = TYPE_LEXERR;
-					res.error = res.attribute = ERR_DECIMAL_LEN;
+					res.error = ERR_DECIMAL_LEN;
 				}
 				if(!pSign && ((f-1)-pE) > 2 || pSign && ((f-1)-pE) > 3) {
-					res.type = TYPE_LEXERR;
-					res.error = res.attribute = ERR_EXPONENT_LEN;
+					res.error = ERR_EXPONENT_LEN;
 				}
 				return res;
 			case -1:
@@ -463,6 +461,10 @@ MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbt
 		MachineResult res = (*(machines[i]))(str, rwl, symbtab);
 		if(res.error == 32767) //default value
 			res.error = 0;
+		if(res.error) {
+			res.type = TYPE_LEXERR;
+			res.attribute = res.error;
+		}
 		if(res.validToken) {
 			int size = res.newString - str;
 			res.lexeme = malloc(size*sizeof(char)+1);
