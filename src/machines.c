@@ -430,7 +430,12 @@ MachineResult CATCHALL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			return res;
 		case '.':
 			res.type = TYPE_OTHER;
-			res.attribute = OTHER_PERIOD;
+			if(str[1] == '.') {
+				res.attribute = OTHER_DOUBLEPERIOD;
+				res.newString = str+2;
+			} else {
+				res.attribute = OTHER_PERIOD;
+			}
 			return res;
 		case '+':
 			res.type = TYPE_ADDOP;

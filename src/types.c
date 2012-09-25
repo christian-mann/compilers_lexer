@@ -81,6 +81,7 @@ char* convertConstantToString(int constant) {
 	case OTHER_SEMICOLON: return "OTHER_SEMICOLON";
 	case OTHER_COLON: return "OTHER_COLON";
 	case OTHER_PERIOD: return "OTHER_PERIOD";
+	case OTHER_DOUBLEPERIOD: return "OTHER_DOUBLEPERIOD";
 	case ERR_ID_LEN: return "ERR_ID_LEN";
 	case ERR_INT_LEN: return "ERR_INT_LEN";
 	case ERR_INT_LEADING_ZERO: return "ERR_INT_LEADING_ZERO";
