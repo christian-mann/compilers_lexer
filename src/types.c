@@ -38,6 +38,7 @@ char* convertConstantToString(int constant) {
 	case TYPE_PAREN: return "TYPE_PAREN";
 	case TYPE_OTHER: return "TYPE_OTHER";
 	case TYPE_ID: return "TYPE_ID";
+	case TYPE_BRACKET: return "TYPE_BRACKET";
 	case TYPE_LEXERR: return "TYPE_LEXERR";
 	case TYPE_PROGRAM: return "TYPE_PROGRAM";
 	case TYPE_VAR: return "TYPE_VAR";
@@ -74,6 +75,8 @@ char* convertConstantToString(int constant) {
 	case MULOP_AND: return "MULOP_AND";
 	case PAREN_OPEN: return "PAREN_OPEN";
 	case PAREN_CLOSE: return "PAREN_CLOSE";
+	case BRACKET_OPEN: return "BRACKET_OPEN";
+	case BRACKET_CLOSE: return "BRACKET_CLOSE";
 	case OTHER_COMMA: return "OTHER_COMMA";
 	case OTHER_SEMICOLON: return "OTHER_SEMICOLON";
 	case OTHER_COLON: return "OTHER_COLON";

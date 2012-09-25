@@ -119,26 +119,32 @@ MachineResult RELOP(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			if(*f == '>') state = 7;
 			break;
 		case 3:
+			f--;
 			res.attribute = RELOP_EQ;
 			res.newString = f;
 			return res;
 		case 4:
+			f--;
 			res.attribute = RELOP_GE;
 			res.newString = f;
 			return res;
 		case 5:
+			f--;
 			res.attribute = RELOP_GT;
 			res.newString = f;
 			return res;
 		case 6:
+			f--;
 			res.attribute = RELOP_LE;
 			res.newString = f;
 			return res;
 		case 7:
+			f--;
 			res.attribute = RELOP_NE;
 			res.newString = f;
 			return res;
 		case 8:
+			f--;
 			res.attribute = RELOP_LT;
 			res.newString = f;
 			return res;
@@ -405,6 +411,14 @@ MachineResult CATCHALL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 		case ')':
 			res.type = TYPE_PAREN;
 			res.attribute = PAREN_CLOSE;
+			return res;
+		case '[':
+			res.type = TYPE_BRACKET;
+			res.attribute = BRACKET_OPEN;
+			return res;
+		case ']':
+			res.type = TYPE_BRACKET;
+			res.attribute = BRACKET_CLOSE;
 			return res;
 		case ',':
 			res.type = TYPE_OTHER;

@@ -13,6 +13,7 @@
 #define TYPE_PAREN 107
 #define TYPE_OTHER 108
 #define TYPE_ID 109
+#define TYPE_BRACKET 110
 #define TYPE_LEXERR 200
 #define TYPE_PROGRAM 300
 #define TYPE_VAR 301
@@ -54,6 +55,9 @@
 
 #define PAREN_OPEN 1070
 #define PAREN_CLOSE 1071
+
+#define BRACKET_OPEN 1100
+#define BRACKET_CLOSE 1101
 
 #define OTHER_COMMA 1080
 #define OTHER_SEMICOLON 1081
