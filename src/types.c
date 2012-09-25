@@ -39,6 +39,22 @@ char* convertConstantToString(int constant) {
 	case TYPE_OTHER: return "TYPE_OTHER";
 	case TYPE_ID: return "TYPE_ID";
 	case TYPE_LEXERR: return "TYPE_LEXERR";
+	case TYPE_PROGRAM: return "TYPE_PROGRAM";
+	case TYPE_VAR: return "TYPE_VAR";
+	case TYPE_ARRAY: return "TYPE_ARRAY";
+	case TYPE_OF: return "TYPE_OF";
+	case TYPE_INTEGER: return "TYPE_INTEGER";
+	case TYPE_REAL: return "TYPE_REAL";
+	case TYPE_FUNCTION: return "TYPE_FUNCTION";
+	case TYPE_PROCEDURE: return "TYPE_PROCEDURE";
+	case TYPE_BEGIN: return "TYPE_BEGIN";
+	case TYPE_END: return "TYPE_END";
+	case TYPE_IF: return "TYPE_IF";
+	case TYPE_THEN: return "TYPE_THEN";
+	case TYPE_ELSE: return "TYPE_ELSE";
+	case TYPE_WHILE: return "TYPE_WHILE";
+	case TYPE_DO: return "TYPE_DO";
+	case TYPE_NOT: return "TYPE_NOT";
 	case RELOP_EQ: return "RELOP_EQ";
 	case RELOP_GE: return "RELOP_GE";
 	case RELOP_GT: return "RELOP_GT";
@@ -50,8 +66,12 @@ char* convertConstantToString(int constant) {
 	case NUM_LONGREAL: return "NUM_LONGREAL";
 	case ADDOP_PLUS: return "ADDOP_PLUS";
 	case ADDOP_MINUS: return "ADDOP_MINUS";
+	case ADDOP_OR: return "ADDOP_OR";
 	case MULOP_TIMES: return "MULOP_TIMES";
 	case MULOP_DIVIDE: return "MULOP_DIVIDE";
+	case MULOP_DIV: return "MULOP_DIV";
+	case MULOP_MOD: return "MULOP_MOD";
+	case MULOP_AND: return "MULOP_AND";
 	case PAREN_OPEN: return "PAREN_OPEN";
 	case PAREN_CLOSE: return "PAREN_CLOSE";
 	case OTHER_COMMA: return "OTHER_COMMA";
@@ -63,6 +83,7 @@ char* convertConstantToString(int constant) {
 	case ERR_INT_LEADING_ZERO: return "ERR_INT_LEADING_ZERO";
 	case ERR_DECIMAL_LEN: return "ERR_DECIMAL_LEN";
 	case ERR_EXPONENT_LEN: return "ERR_EXPONENT_LEN";
+	case ERR_EXPONENT_LEADING_ZERO: return "ERR_EXPONENT_LEADING_ZERO";
 	case 0: return "NULL";
 	}
 	//symbol pointers
