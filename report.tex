@@ -1,10 +1,22 @@
-\documentclass{report}
+\documentclass[titlepage]{article}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage[colorlinks=true]{hyperref}
+
+\setcounter{secnumdepth}{-1}
+% settings for code listings
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
 \author{Christian Mann}
 \title{Compiler Construction \\ Project 1}
 \date{\today}
 
 \begin{document}
-	\titlepage
+	\maketitle
+	\tableofcontents
 
 	\section{Introduction}
 	\section{Methodology}
