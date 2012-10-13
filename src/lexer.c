@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
 	sfSrc = sfListing = sfToken = sfSymbolTable = sfReservedWords = NULL;
 
 	FILE *fSrc, *fListing, *fToken, *fSymbolTable, *fReservedWords;
-	sfSrc = sfListing = sfToken = fSymbolTable = fReservedWords = NULL;
+	fSrc = fListing = fToken = fSymbolTable = fReservedWords = NULL;
 
 	// format: ./a.out -r sfReservedWords [-l sfListing] [-t sfToken] [[-s] sfSrc]
 	int i;
