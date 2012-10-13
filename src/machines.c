@@ -10,10 +10,11 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = b;
 	int state = 0;
 	MachineResult res;
+	res.error = 0;
 	while(1) {
 		switch(state) {
 		case 0:
-			if('a' <= *f && *f <= 'z' || 'A' <= *f && *f <= 'Z')
+			if(('a' <= *f && *f <= 'z') || ('A' <= *f && *f <= 'Z'))
 				state = 1;
 			else {
 				res.newString = str;
@@ -24,7 +25,7 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			}
 			break;
 		case 1:
-			if('a' <= *f && *f <= 'z' || 'A' <= *f && *f <= 'Z' || '0' <= *f && *f <= '9')
+			if(('a' <= *f && *f <= 'z' ) || ( 'A' <= *f && *f <= 'Z' ) || ( '0' <= *f && *f <= '9'))
 				state = 1;
 			else
 				state = 2;
@@ -45,7 +46,7 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			} else {
 				SymbolTableEntry* entry = checkSymbolTable(lex, symbtab);
 				res.type = TYPE_ID;
-				res.attribute = (int)entry;
+				res.pointer = entry;
 				res.validToken = 1;
 				if((f-str) > 10) {
 					res.error = ERR_ID_LEN;
@@ -98,6 +99,7 @@ MachineResult RELOP(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
+	res.error = 0;
 	res.validToken = 1;
 	res.type = TYPE_RELOP;
 	res.newString = f;
@@ -162,6 +164,7 @@ MachineResult WS(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
+	res.error = 0;
 	while(1) {
 		switch(state) {
 			case 0:
@@ -197,6 +200,7 @@ MachineResult INT(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
+	res.error = 0;
 	while(1) {
 		switch(state) {
 			case 0:
@@ -240,6 +244,7 @@ MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
+	res.error = 0;
 	char* pDot;
 	while(1) {
 		switch(state) {
@@ -298,6 +303,7 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	char *f = str;
 	int state = 0;
 	MachineResult res;
+	res.error = 0;
 	char *pDot, *pE, *pSign = NULL;
 	while(1) {
 		switch(state) {
@@ -370,7 +376,7 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				if(((pE-1)-pDot) > 5) {
 					res.error = ERR_DECIMAL_LEN;
 				}
-				if(!pSign && ((f-1)-pE) > 2 || pSign && ((f-1)-pE) > 3) {
+				if((!pSign && ((f-1)-pE) > 2 ) || ( pSign && ((f-1)-pE) > 3)) {
 					res.error = ERR_EXPONENT_LEN;
 				}
 				return res;
@@ -387,6 +393,7 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 
 MachineResult ENDOFFILE(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	MachineResult res;
+	res.error = 0;
 	res.type = TYPE_ENDOFFILE;
 	res.attribute = 0;
 	res.validToken = 1;
@@ -401,6 +408,7 @@ MachineResult ENDOFFILE(char* str, ReservedWordList* rwl, SymbolTable* symbtab) 
 
 MachineResult CATCHALL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	MachineResult res;
+	res.error = 0;
 	res.validToken = 1;
 	res.newString = str+1;
 	switch(*str) {
@@ -478,8 +486,6 @@ MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbt
 	int i;
 	for(i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
 		MachineResult res = (*(machines[i]))(str, rwl, symbtab);
-		if(res.error == 32767) //default value
-			res.error = 0;
 		if(res.error) {
 			res.type = TYPE_LEXERR;
 			res.attribute = res.error;

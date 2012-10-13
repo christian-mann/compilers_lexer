@@ -90,8 +90,5 @@ char* convertConstantToString(int constant) {
 	case ERR_EXPONENT_LEADING_ZERO: return "ERR_EXPONENT_LEADING_ZERO";
 	case 0: return "NULL";
 	}
-	//symbol pointers
-	char *str = malloc(40*sizeof(char)); //that should be more than sufficient
-	sprintf(str, "%p", constant);
-	return str;
+	return "UNKNOWN";
 }

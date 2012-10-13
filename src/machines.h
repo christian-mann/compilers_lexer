@@ -4,7 +4,10 @@ typedef struct {
 	char* lexeme;
 	char* newString;
 	int type;
-	int attribute;
+	union {
+		int attribute;
+		void* pointer;
+	};
 	int validToken;
 	int error;
 } MachineResult;

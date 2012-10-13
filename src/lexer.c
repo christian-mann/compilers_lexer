@@ -42,7 +42,10 @@ int main(int argc, char **argv) {
 		fToken = stdout;
 	}
 	if(!sfReservedWords || (fReservedWords = fopen(sfReservedWords, "r")) == NULL) {
-		fprintf(stderr, "Warning: reserved word file not given or not found, not using reserved words.\n");
+		if (fReservedWords = fopen("data/reserved-words.txt", "r"))
+			fprintf(stderr, "Warning: reserved word file not given, using \"data/reserved-words.txt\"\n");
+		else
+			fprintf(stderr, "Warning: reserved word file not given or not found, not using reserved words.\n");
 	}
 	if(!sfSymbolTable || (fSymbolTable = fopen(sfSymbolTable, "w")) == NULL) {
 		fprintf(stderr, "Warning: symbol table file not given or not found, not outputting symbol table.\n");
@@ -69,18 +72,25 @@ int main(int argc, char **argv) {
 	int cLine = 1;
 	while(fgets(sLine, sizeof(sLine), fSrc) != NULL && !feof(fSrc)) {
 		int length = strlen(sLine);
-		fprintf(fListing, "%d\t%s", cLine, sLine);
+		if(fListing) fprintf(fListing, "%d\t%s", cLine, sLine);
 
 
 		//split line into tokens
 		char *psLine = sLine;
 		while(psLine < sLine + length && fToken) {
 			MachineResult res = identifyToken(psLine, rwl, symbtab);
-			if(res.type != TYPE_WS) { //we don't care about whitespace
+			if(res.type == TYPE_WS) { //we don't care about whitespace
+
+			} else if(res.type == TYPE_ID) {
+				fprintf(fToken, "%d\t%s\t%d(%s)\t%p\n", cLine, res.lexeme, res.type, convertConstantToString(res.type), res.pointer);
+				if(res.error && fListing) {
+					fprintf(fListing, "%s:\t%p:\t%s\n", convertConstantToString(res.type), res.pointer, res.lexeme);
+				}
+			} else {
 				fprintf(fToken, "%d\t%s\t%d(%s)\t%d(%s)\n", cLine, res.lexeme, res.type, convertConstantToString(res.type), res.attribute, convertConstantToString(res.attribute));
-			}
-			if(res.error && fListing) {
-				fprintf(fListing, "%s:\t%s:\t%s\n", convertConstantToString(res.type), convertConstantToString(res.attribute), res.lexeme);
+				if(res.error && fListing) {
+					fprintf(fListing, "%s:\t%s:\t%s\n", convertConstantToString(res.type), convertConstantToString(res.attribute), res.lexeme);
+				}
 			}
 			psLine = res.newString;
 			free(res.lexeme);
