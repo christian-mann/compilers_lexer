@@ -121,32 +121,26 @@ MachineResult RELOP(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			if(*f == '>') state = 7;
 			break;
 		case 3:
-			f--;
 			res.attribute = RELOP_EQ;
 			res.newString = f;
 			return res;
 		case 4:
-			f--;
 			res.attribute = RELOP_GE;
 			res.newString = f;
 			return res;
 		case 5:
-			f--;
 			res.attribute = RELOP_GT;
 			res.newString = f;
 			return res;
 		case 6:
-			f--;
 			res.attribute = RELOP_LE;
 			res.newString = f;
 			return res;
 		case 7:
-			f--;
 			res.attribute = RELOP_NE;
 			res.newString = f;
 			return res;
 		case 8:
-			f--;
 			res.attribute = RELOP_LT;
 			res.newString = f;
 			return res;
