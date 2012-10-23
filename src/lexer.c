@@ -70,9 +70,15 @@ int main(int argc, char **argv) {
 	//begin reading a line at a time
 	char sLine[80];
 	int cLine = 1;
-	while(fgets(sLine, sizeof(sLine), fSrc) != NULL && !feof(fSrc)) {
+	bool eof = false;
+	while(!eof) {
+		fgets(sLine, sizeof(sLine), fSrc);
+		if(feof(fSrc)) {
+			sLine[0] = EOF;
+			sLine[1] = 0;
+		}
 		int length = strlen(sLine);
-		if(fListing) fprintf(fListing, "%d\t%s", cLine, sLine);
+		if(fListing && !feof(fSrc)) fprintf(fListing, "%d\t%s", cLine, sLine);
 
 
 		//split line into tokens
@@ -86,6 +92,9 @@ int main(int argc, char **argv) {
 				if(res.error && fListing) {
 					fprintf(fListing, "%s:\t%p:\t%s\n", convertConstantToString(res.type), res.pointer, res.lexeme);
 				}
+			} else if(res.type == TYPE_ENDOFFILE) {
+				fprintf(fToken, "%d\t%s\t%d(%s)\t%d(%s)\n", cLine, "(EOF)", res.type, convertConstantToString(res.type), res.attribute, convertConstantToString(res.attribute));
+				eof = true;
 			} else {
 				fprintf(fToken, "%d\t%s\t%d(%s)\t%d(%s)\n", cLine, res.lexeme, res.type, convertConstantToString(res.type), res.attribute, convertConstantToString(res.attribute));
 				if(res.error && fListing) {

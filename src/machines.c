@@ -391,7 +391,7 @@ MachineResult ENDOFFILE(char* str, ReservedWordList* rwl, SymbolTable* symbtab) 
 	res.type = TYPE_ENDOFFILE;
 	res.attribute = 0;
 	res.validToken = 1;
-	if(*str == 4) {//end-of-file character
+	if(*str == EOF) {//end-of-file character
 		res.newString = str+1;
 	} else {
 		res.newString = str;
@@ -498,7 +498,8 @@ MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbt
 	memcpy(res.lexeme, str, 1);
 	res.lexeme[1] = 0;
 	res.newString = str+1;
-	res.type = res.attribute = -1;
+	res.type = TYPE_LEXERR;
+	res.attribute = res.error = ERR_UNRECOG_TOKEN;
 	res.validToken = 0;
 	return res;
 }

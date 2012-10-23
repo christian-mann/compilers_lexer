@@ -88,6 +88,7 @@ char* convertConstantToString(int constant) {
 	case ERR_DECIMAL_LEN: return "ERR_DECIMAL_LEN";
 	case ERR_EXPONENT_LEN: return "ERR_EXPONENT_LEN";
 	case ERR_EXPONENT_LEADING_ZERO: return "ERR_EXPONENT_LEADING_ZERO";
+	case ERR_UNRECOG_TOKEN: return "ERR_UNRECOG_TOKEN";
 	case 0: return "NULL";
 	}
 	return "UNKNOWN";

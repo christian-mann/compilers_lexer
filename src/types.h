@@ -71,6 +71,7 @@
 #define ERR_DECIMAL_LEN 2003
 #define ERR_EXPONENT_LEN 2004
 #define ERR_EXPONENT_LEADING_ZERO 2005
+#define ERR_UNRECOG_TOKEN 2006
 
 typedef struct {
 	char* word;
