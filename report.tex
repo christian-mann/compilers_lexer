@@ -62,7 +62,7 @@
 	\section{Implementation}
 		\subsection{Machines}
 			The machines are discrete finite automatons (DFAs), and as such they are implemented using a state machine. In the appendix is the graph representation of each machine. The interface for the machine is simple -- each machine (function) takes in a \texttt{char*} string, a pointer to the reserved word list, and a pointer to the symbol table.
-			At the start, the machine copies the pointer to the string into a secondary "forward" pointer. The basic structure of the machine is a while loop surrounding a switch statement. An integer variable \texttt{state} is maintained, denoting the current state of the program. Certain states are "final" states, in which the machine returns a token or an error. At the end of the switch statement, the forward pointer is incremented.
+			At the start, the machine copies the pointer to the string into a secondary ``forward'' pointer. The basic structure of the machine is a while loop surrounding a switch statement. An integer variable \texttt{state} is maintained, denoting the current state of the program. Certain states are ``final'' states, in which the machine returns a token or an error. At the end of the switch statement, the forward pointer is incremented.
 			The machines do not simply return strings -- they return a more complicated \texttt{struct} which has the following attributes:
 			\begin{description}
 				\item[\texttt{char* lexeme}] A pointer to the token string -- this storage is allocated within the machine, and needs to be freed later on.
@@ -80,7 +80,7 @@
 		\subsection{Reserved Words}
 			The reserved words are read from a file given on the command line. The file structure is simple -- each line contains a reserved word, followed by its type, followed by its attribute. Both are given as integers. The code for reading the file is a simple \texttt{scanf} call. The data structure used to store the reserved words is a linked list, initialized in the driver program.
 		\subsection{Symbol Table}
-			The symbol table is very simple at the moment -- it is merely a linked list of symbol table entries. Currently the symbol table entry struct is very anemic, containing only a \texttt{char*} for the word. The symbol table is not stored in sorted order, which would be an optimization. The symbol table has a Set semantic, so it only requires one method: \texttt{checkSymbolTable}, which iterates through the linked list, attempting to match a given string (using \texttt{strlen}). If it finds no matches, it appends a new SymbolTableEntry to the end.
+			The symbol table is very simple at the moment -- it is merely a linked list of symbol table entries. Currently the symbol table entry struct is very anemic, containing only a \texttt{char*} for the word. The symbol table is not stored in sorted order, which would be an optimization. The symbol table has a Set semantic, so it only requires one method: \texttt{checkSymbolTable}, which iterates through the linked list, attempting to match a given string (using \texttt{strlen}). If it finds no matches, it appends a new \texttt{SymbolTableEntry} to the end.
 		\subsection{Driver}
 			Since this is only a lexical analyzer, and the syntactic analyzer has not been built as of yet, this program comes with a simple driver that reads in the reserved words file and the source file, and produces a listings file and a token file. The program takes command line arguments for the reserved word list file, the symbol table file, the listings file, and the token file, as well as the source file. This component of the program will of course be unnecessary for the second project.
 	\section{Discussion and Conclusions}
@@ -88,7 +88,13 @@
 			There are a few optimizations that could be made -- for instance, the two collections \texttt{SymbolTable} and \texttt{ReservedWordList} could be alphabetized, to facilitate lookups, or converted into a more useful data structure than a linked list, such as a tree or a heap. Perhaps this could be changed in a future edition.
 		\subsection{Testing}
 			Unit testing was very important to ensure the correctness of the program. To that end, programs were written that rigorously tested each machine on edge and corner cases, for both valid and erroneous inputs. In addition, many sample Pascal programs were written and the program as a whole was verified to work correctly.
-	\section{References}
+	\begin{thebibliography}{9}
+		\bibitem{Textbook}
+			Aho, Sethi, and Ullman.
+			\emph{Compilers: Principles, Techniques, and Tools}.
+			1st ed.
+			Pearson Education, Inc: 2006. Print.
+	\end{thebibliography}
 	\appendix
 %	\section{State Machines}
 %		\includegraphics{doc/WS}
@@ -99,9 +105,20 @@
 %		\includegraphics{doc/RELOP}
 %		\includegraphics{doc/CATCHALL}
 %		\includegraphics{doc/EOF}
+	\clearpage
 	\section{Sample Inputs and Outputs}
+		\subsection{Sample Pascal File}
 		\lstinputlisting{src/tests/sample-pascal.psc}
+		\subsubsection{Listing File}
+		\lstinputlisting{src/tests/sample-pascal.lst}
+		\subsubsection{Token File}
+		\lstinputlisting{src/tests/sample-pascal.tok}
+		\subsection{Invalid Pascal File}
 		\lstinputlisting{src/tests/crap-pascal.psc}
+		\subsubsection{Listing File}
+		\lstinputlisting{src/tests/crap-pascal.lst}
+		\subsubsection{Token File}
+		\lstinputlisting{src/tests/crap-pascal.tok}
 	\section{Program Listings}
 		\subsection{machines.c}
 		\lstinputlisting{src/machines.c}
