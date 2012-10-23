@@ -19,18 +19,56 @@
 	\tableofcontents
 
 	\section{Introduction}
+		This is the front end of a compiler for a limited subset of the Pascal language.
+
+		The first phase of the compiler project involves implementing the Lexical Analyzer. The lexical analyzer is written in C. The analyzer is designed as a separate program, which will be invoked by the parser. It reads each line of the source program (with no more than 72 characters per line) into a 74-width character buffer, generates tokens, produces a listing file with line numbers, and detects and prints the appropriate error messages.
+
+		In addition, it was necessary to design and implement a simple symbol table.
 	\section{Methodology}
-		\subsection{Preliminaries}
+		\subsection{Design}
+			The purpose of this program is to slice a file up into individual tokens, and tag said tokens with types and attributes. A parser will then be able to produce a parse tree with this set of tokens. The lexer exposes one method to perform this task -- \texttt{identifyToken}, which takes a string, a pointer to a list of reserved words, and a pointer to the symbol table. This method uses discrete finite automatons to accomplish this task (more information in the section entitled Machines).
+			The driver has the responsibility of reading in the reserved word file and creating the symbol table for the machines to use.
 		\subsection{Machines}
+			An individual machine is responsible for recognition of one type of token. The aforementioned method \texttt{identifyToken} tries each machine in turn with the current line, until one of them is able to extract a token from the string.
 	\section{Implementation}
-		\subsection{Preliminaries}
 		\subsection{Machines}
+			The machines are discrete finite automatons (DFAs), and as such they are implemented using a state machine. In the appendix is the graph representation of each machine. The interface for the machine is simple -- each machine (function) takes in a \texttt{char*} string, a pointer to the reserved word list, and a pointer to the symbol table.
+			At the start, the machine copies the pointer to the string into a secondary "forward" pointer. The basic structure of the machine is a while loop surrounding a switch statement. An integer variable \texttt{state} is maintained, denoting the current state of the program. Certain states are "final" states, in which the machine returns a token or an error. At the end of the switch statement, the forward pointer is incremented.
+			The machines do not simply return strings -- they return a more complicated \texttt{struct} which has the following attributes:
+			\begin{description}
+				\item[\texttt{char* lexeme}] A pointer to the token string -- this storage is allocated within the machine, and needs to be freed later on.
+				\item[\texttt{char* newString}] The updated forward pointer (the remainder of the string)
+				\item[\texttt{int type}] The type of the token that was extracted.
+				\item[\texttt{int attribute}] The specific attribute to the lexeme.
+				\item[\texttt{void* pointer}] A pointer to any extra information about the lexeme, such as a symbol table entry.
+				\item[\texttt{int validToken}] A boolean value denoting whether a machine extracted any useful information from the string it was passed.
+				\item[\texttt{int error}] A bitfield containing any errors that arose during the lexing, such as length of literals.
+			\end{description}
+			The \texttt{type} field denotes the type of symbol the token denotes, for instance the ``while'' keyword, or an integer literal.
+			The \texttt{attribute} field denotes any specific attribute the symbol needs, for instance the value of an integer literal.
+			
+			Because IDs and reserved words are indistinguishable from their intrinsic properties, there is only one machine to recognize either, called \texttt{IDRES}. Once it enters its stop state it consults the 
 		\subsection{Reserved Words}
+			The reserved words are read from a file given on the command line. The file structure is simple -- each line contains a reserved word, followed by its type, followed by its attribute. Both are given as integers. The code for reading the file is a simple \texttt{scanf} call. The data structure used to store the reserved words is a linked list, initialized in the driver program.
 		\subsection{Symbol Table}
+			The symbol table is very simple at the moment -- it is merely a linked list of symbol table entries. Currently the symbol table entry struct is very anemic, containing only a \texttt{char*} for the word. The symbol table is not stored in sorted order, which would be an optimization. The symbol table has a Set semantic, so it only requires one method: \texttt{checkSymbolTable}, which iterates through the linked list, attempting to match a given string (using \texttt{strlen}). If it finds no matches, it appends a new SymbolTableEntry to the end.
 		\subsection{Driver}
+			Since this is only a lexical analyzer, and the syntactic analyzer has not been built as of yet, this program comes with a simple driver that reads in the reserved words file and the source file, and produces a listings file and a token file. The program takes command line arguments for the reserved word list file, the symbol table file, the listings file, and the token file, as well as the source file. This component of the program will of course be unnecessary for the second project.
 	\section{Discussion and Conclusions}
+		\subsection{Optimization}
+			There are a few optimizations that could be made -- for instance, the two collections \texttt{SymbolTable} and \texttt{ReservedWordList} could be alphabetized, to facilitate lookups, or converted into a more useful data structure than a linked list, such as a tree or a heap. Perhaps this could be changed in a future edition.
+		\subsection{Testing}
+			Unit testing was very important to ensure the correctness of the program. To that end, programs were written that rigorously tested each machine on edge and corner cases, for both valid and erroneous inputs. In addition, many sample Pascal programs were written and the program as a whole was verified to work correctly.
 	\section{References}
 	\appendix
+	\section{State Machines}
 	\section{Sample Inputs and Outputs}
+		\lstinputlisting{src/tests/sample-pascal.psc}
+		\lstinputlisting{src/tests/crap-pascal.psc}
 	\section{Program Listings}
+		\lstinputlisting{src/machines.c}
+		\lstinputlisting{src/machines.h}
+		\lstinputlisting{src/types.c}
+		\lstinputlisting{src/types.h}
+		\lstinputlisting{src/lexer.c}
 \end{document}
