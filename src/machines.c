@@ -494,8 +494,10 @@ MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbt
 	}
 	//unrecognized token
 	MachineResult res;
-	res.lexeme = NULL;
-	res.newString = str;
+	res.lexeme = malloc(2*sizeof(char));
+	memcpy(res.lexeme, str, 1);
+	res.lexeme[1] = 0;
+	res.newString = str+1;
 	res.type = res.attribute = -1;
 	res.validToken = 0;
 	return res;

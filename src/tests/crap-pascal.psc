@@ -1,3 +1,4 @@
+$
 program ex345678901111(input, output);
 var x, y: integer;
 function gcd(a, b: integer): integer;
