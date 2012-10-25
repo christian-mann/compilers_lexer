@@ -5,6 +5,8 @@ code:
 
 clean:
 	rm -f bin/*
+	rm -f report.aux report.log report.out report.pdf report.toc
+	rm -f src/tests/*.sym src/tests/*.lst src/tests/*.tok
 
 report: tests
 	pdflatex report.tex
