@@ -8,7 +8,7 @@ clean:
 	rm -f report.aux report.log report.out report.pdf report.toc
 	rm -f src/tests/*.sym src/tests/*.lst src/tests/*.tok
 
-report: tests
+report: tests graphs
 	pdflatex report.tex
 	pdflatex report.tex
 
@@ -18,4 +18,11 @@ tests: code
 		f=`basename $$f .psc`; \
 		bin/lexer -r data/reserved-words.txt -l src/tests/$$f.lst -t /tmp/tok -s src/tests/$$f.sym src/tests/$$f.psc; \
 		cat /tmp/tok | column -t > src/tests/$$f.tok; \
+	done;
+
+graphs:
+	for f in doc/*.dot; do \
+		echo $$f; \
+		f=`basename $$f .dot`; \
+		dot -Tpng doc/$$f.dot > doc/$$f.png; \
 	done;
