@@ -88,15 +88,15 @@ int main(int argc, char **argv) {
 			if(res.type == TYPE_WS) { //we don't care about whitespace
 
 			} else if(res.type == TYPE_ID) {
-				fprintf(fToken, "%d\t%s\t%d(%s)\t%p\n", cLine, res.lexeme, res.type, convertConstantToString(res.type), res.pointer);
+				fprintf(fToken, "%d\t%s\t%s\t%p\n", cLine, res.lexeme, convertConstantToString(res.type), res.pointer);
 				if(res.error && fListing) {
 					fprintf(fListing, "%s:\t%p:\t%s\n", convertConstantToString(res.type), res.pointer, res.lexeme);
 				}
 			} else if(res.type == TYPE_ENDOFFILE) {
-				fprintf(fToken, "%d\t%s\t%d(%s)\t%d(%s)\n", cLine, "(EOF)", res.type, convertConstantToString(res.type), res.attribute, convertConstantToString(res.attribute));
+				fprintf(fToken, "%d\t%s\t%s\t%s\n", cLine, "(EOF)", convertConstantToString(res.type), convertConstantToString(res.attribute));
 				eof = true;
 			} else {
-				fprintf(fToken, "%d\t%s\t%d(%s)\t%d(%s)\n", cLine, res.lexeme, res.type, convertConstantToString(res.type), res.attribute, convertConstantToString(res.attribute));
+				fprintf(fToken, "%d\t%s\t%s\t%s\n", cLine, res.lexeme, convertConstantToString(res.type), convertConstantToString(res.attribute));
 				if(res.error && fListing) {
 					fprintf(fListing, "%s:\t%s:\t%s\n", convertConstantToString(res.type), convertConstantToString(res.attribute), res.lexeme);
 				}
