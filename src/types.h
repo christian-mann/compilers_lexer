@@ -13,7 +13,7 @@ X(NULL_, =0) \
 X(T_RELOP, ) \
 X(T_WS, ) \
 X(T_NUM, ) \
-X(T_ENDOFFILE, ) \
+X(T_EOF, ) \
 X(T_ADDOP, =104) \
 X(T_MULOP, =105) \
 X(T_ASSIGNOP, ) \
@@ -35,7 +35,6 @@ X(T_ARRAY, =302) \
 X(T_OF, =303) \
 X(T_INTEGER, =304) \
 X(T_REAL, =305) \
-X(T_FUNCTION, =306) \
 X(T_PROCEDURE, =307) \
 X(T_BEGIN, =308) \
 X(T_END, =309) \
@@ -45,6 +44,9 @@ X(T_ELSE, =312) \
 X(T_WHILE, =313) \
 X(T_DO, =314) \
 X(T_NOT, =315) \
+X(T_CALL, =316) \
+X(T_PLUS, ) \
+X(T_MINUS, ) \
 X(RELOP_EQ, ) \
 X(RELOP_GE, ) \
 X(RELOP_GT, ) \

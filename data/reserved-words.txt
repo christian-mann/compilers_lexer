@@ -4,7 +4,6 @@ array 302 0
 of 303 0
 integer 304 0
 real 305 0
-function 306 0
 procedure 307 0
 begin 308 0
 end 309 0
@@ -14,6 +13,7 @@ else 312 0
 while 313 0
 do 314 0
 not 315 0
+call 316 0
 div 105 1052
 mod 105 1053
 and 105 1054
