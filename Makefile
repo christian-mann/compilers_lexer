@@ -13,10 +13,10 @@ report: tests graphs
 	pdflatex report.tex
 
 tests: code
-	for f in src/tests/*.psc; do \
+	for f in src/tests/*.pas; do \
 		echo $$f; \
-		f=`basename $$f .psc`; \
-		bin/lexer -r data/reserved-words.txt -l src/tests/$$f.lst -t /tmp/tok -s src/tests/$$f.sym src/tests/$$f.psc; \
+		f=`basename $$f .pas`; \
+		bin/lexer -r data/reserved-words.txt -l src/tests/$$f.lst -t /tmp/tok -s src/tests/$$f.sym src/tests/$$f.pas; \
 		cat /tmp/tok | column -t > src/tests/$$f.tok; \
 	done;
 
