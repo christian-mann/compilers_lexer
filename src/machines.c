@@ -45,7 +45,7 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.validToken = 1;
 			} else {
 				SymbolTableEntry* entry = checkSymbolTable(lex, symbtab);
-				res.type = TYPE_ID;
+				res.type = T_ID;
 				res.pointer = entry;
 				res.validToken = 1;
 				if((f-str) > 10) {
@@ -101,7 +101,7 @@ MachineResult RELOP(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	MachineResult res;
 	res.error = 0;
 	res.validToken = 1;
-	res.type = TYPE_RELOP;
+	res.type = T_RELOP;
 	res.newString = f;
 	while(1) {
 		switch(state) {
@@ -176,7 +176,7 @@ MachineResult WS(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			case 2:
 				f--;
 				res.newString = f;
-				res.type = TYPE_WS;
+				res.type = T_WS;
 				res.attribute = 0;
 				res.validToken = 1;
 				return res;
@@ -213,7 +213,7 @@ MachineResult INT(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			case 2:
 				f--;
 				res.newString = f;
-				res.type = TYPE_NUM;
+				res.type = T_NUM;
 				res.attribute = NUM_INT;
 				res.validToken = 1;
 				if((f-str) > 10) {
@@ -272,7 +272,7 @@ MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			case 4:
 				f--;
 				res.newString = f;
-				res.type = TYPE_NUM;
+				res.type = T_NUM;
 				res.attribute = NUM_REAL;
 				res.validToken = 1;
 				if((pDot-str) > 5) {
@@ -361,7 +361,7 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			case 7:
 				f--;
 				res.newString = f;
-				res.type = TYPE_NUM;
+				res.type = T_NUM;
 				res.attribute = NUM_LONGREAL;
 				res.validToken = 1;
 				if((pDot-str) > 5) {
@@ -388,7 +388,7 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 MachineResult ENDOFFILE(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	MachineResult res;
 	res.error = 0;
-	res.type = TYPE_ENDOFFILE;
+	res.type = T_ENDOFFILE;
 	res.attribute = 0;
 	res.validToken = 1;
 	if(*str == EOF) {//end-of-file character
@@ -407,63 +407,63 @@ MachineResult CATCHALL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	res.newString = str+1;
 	switch(*str) {
 		case '(':
-			res.type = TYPE_LPAREN;
+			res.type = T_LPAREN;
 			res.attribute = 0;
 			return res;
 		case ')':
-			res.type = TYPE_RPAREN;
+			res.type = T_RPAREN;
 			res.attribute = 0;
 			return res;
 		case '[':
-			res.type = TYPE_LBRACK;
+			res.type = T_LBRACK;
 			res.attribute = 0;
 			return res;
 		case ']':
-			res.type = TYPE_RBRACK;
+			res.type = T_RBRACK;
 			res.attribute = 0;
 			return res;
 		case ',':
-			res.type = TYPE_COMMA;
+			res.type = T_COMMA;
 			res.attribute = 0;
 			return res;
 		case ';':
-			res.type = TYPE_SEMICOLON;
+			res.type = T_SEMICOLON;
 			res.attribute = 0;
 			return res;
 		case '.':
 			if(str[1] == '.') {
-				res.type = TYPE_DOUBLEPERIOD;
+				res.type = T_DOUBLEPERIOD;
 				res.attribute = 0;
 				res.newString = str+2;
 			} else {
-				res.type = TYPE_PERIOD;
+				res.type = T_PERIOD;
 				res.attribute = 0;
 			}
 			return res;
 		case '+':
-			res.type = TYPE_ADDOP;
+			res.type = T_ADDOP;
 			res.attribute = ADDOP_PLUS;
 			return res;
 		case '-':
-			res.type = TYPE_ADDOP;
+			res.type = T_ADDOP;
 			res.attribute = ADDOP_MINUS;
 			return res;
 		case '*':
-			res.type = TYPE_MULOP;
+			res.type = T_MULOP;
 			res.attribute = MULOP_TIMES;
 			return res;
 		case '/':
-			res.type = TYPE_MULOP;
+			res.type = T_MULOP;
 			res.attribute = MULOP_DIVIDE;
 			return res;
 		case ':':
 			if(str[1] == '=') {
-				res.type = TYPE_ASSIGNOP;
+				res.type = T_ASSIGNOP;
 				res.attribute = 0;
 				res.newString = str+2;
 				return res;
 			} else {
-				res.type = TYPE_COLON;
+				res.type = T_COLON;
 				res.attribute = 0;
 				return res;
 			}
@@ -482,7 +482,7 @@ MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbt
 	for(i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
 		MachineResult res = (*(machines[i]))(str, rwl, symbtab);
 		if(res.error) {
-			res.type = TYPE_LEXERR;
+			res.type = T_LEXERR;
 			res.attribute = res.error;
 		}
 		if(res.validToken) {
@@ -499,7 +499,7 @@ MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbt
 	memcpy(res.lexeme, str, 1);
 	res.lexeme[1] = 0;
 	res.newString = str+1;
-	res.type = TYPE_LEXERR;
+	res.type = T_LEXERR;
 	res.attribute = res.error = ERR_UNRECOG_TOKEN;
 	res.validToken = 0;
 	return res;

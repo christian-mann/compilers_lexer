@@ -85,14 +85,14 @@ int main(int argc, char **argv) {
 		char *psLine = sLine;
 		while(psLine < sLine + length && fToken) {
 			MachineResult res = identifyToken(psLine, rwl, symbtab);
-			if(res.type == TYPE_WS) { //we don't care about whitespace
+			if(res.type == T_WS) { //we don't care about whitespace
 
-			} else if(res.type == TYPE_ID) {
+			} else if(res.type == T_ID) {
 				fprintf(fToken, "%d\t%s\t%s\t%p\n", cLine, res.lexeme, convertConstantToString(res.type), res.pointer);
 				if(res.error && fListing) {
 					fprintf(fListing, "%s:\t%p:\t%s\n", convertConstantToString(res.type), res.pointer, res.lexeme);
 				}
-			} else if(res.type == TYPE_ENDOFFILE) {
+			} else if(res.type == T_ENDOFFILE) {
 				fprintf(fToken, "%d\t%s\t%s\t%s\n", cLine, "(EOF)", convertConstantToString(res.type), convertConstantToString(res.attribute));
 				eof = true;
 			} else {
