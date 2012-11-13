@@ -25,68 +25,11 @@ ReservedWordList* parseResWordFile(FILE* fp) {
 	return list;
 }
 
-char* convertConstantToString(int constant) {
-	if(constant < 50 && constant > 0) return "RWORD";
+char* convertConstantToString(enum Symbol constant) {
 	switch(constant) {
-	case TYPE_RELOP: return "TYPE_RELOP";
-	case TYPE_WS: return "TYPE_WS";
-	case TYPE_NUM: return "TYPE_NUM";
-	case TYPE_ENDOFFILE: return "TYPE_ENDOFFILE";
-	case TYPE_ADDOP: return "TYPE_ADDOP";
-	case TYPE_MULOP: return "TYPE_MULOP";
-	case TYPE_ASSIGNOP: return "TYPE_ASSIGNOP";
-	case TYPE_ID: return "TYPE_ID";
-	case TYPE_LEXERR: return "TYPE_LEXERR";
-	case TYPE_PROGRAM: return "TYPE_PROGRAM";
-	case TYPE_VAR: return "TYPE_VAR";
-	case TYPE_ARRAY: return "TYPE_ARRAY";
-	case TYPE_OF: return "TYPE_OF";
-	case TYPE_INTEGER: return "TYPE_INTEGER";
-	case TYPE_REAL: return "TYPE_REAL";
-	case TYPE_FUNCTION: return "TYPE_FUNCTION";
-	case TYPE_PROCEDURE: return "TYPE_PROCEDURE";
-	case TYPE_BEGIN: return "TYPE_BEGIN";
-	case TYPE_END: return "TYPE_END";
-	case TYPE_IF: return "TYPE_IF";
-	case TYPE_THEN: return "TYPE_THEN";
-	case TYPE_ELSE: return "TYPE_ELSE";
-	case TYPE_WHILE: return "TYPE_WHILE";
-	case TYPE_DO: return "TYPE_DO";
-	case TYPE_NOT: return "TYPE_NOT";
-	case RELOP_EQ: return "RELOP_EQ";
-	case RELOP_GE: return "RELOP_GE";
-	case RELOP_GT: return "RELOP_GT";
-	case RELOP_LE: return "RELOP_LE";
-	case RELOP_NE: return "RELOP_NE";
-	case RELOP_LT: return "RELOP_LT";
-	case NUM_INT: return "NUM_INT";
-	case NUM_REAL: return "NUM_REAL";
-	case NUM_LONGREAL: return "NUM_LONGREAL";
-	case ADDOP_PLUS: return "ADDOP_PLUS";
-	case ADDOP_MINUS: return "ADDOP_MINUS";
-	case ADDOP_OR: return "ADDOP_OR";
-	case MULOP_TIMES: return "MULOP_TIMES";
-	case MULOP_DIVIDE: return "MULOP_DIVIDE";
-	case MULOP_DIV: return "MULOP_DIV";
-	case MULOP_MOD: return "MULOP_MOD";
-	case MULOP_AND: return "MULOP_AND";
-	case TYPE_LPAREN: return "TYPE_LPAREN";
-	case TYPE_RPAREN: return "TYPE_RPAREN";
-	case TYPE_LBRACK: return "TYPE_LBRACK";
-	case TYPE_RBRACK: return "TYPE_RBRACK";
-	case TYPE_COMMA: return "TYPE_COMMA";
-	case TYPE_SEMICOLON: return "TYPE_SEMICOLON";
-	case TYPE_COLON: return "TYPE_COLON";
-	case TYPE_PERIOD: return "TYPE_PERIOD";
-	case TYPE_DOUBLEPERIOD: return "TYPE_DOUBLEPERIOD";
-	case ERR_ID_LEN: return "ERR_ID_LEN";
-	case ERR_INT_LEN: return "ERR_INT_LEN";
-	case ERR_INT_LEADING_ZERO: return "ERR_INT_LEADING_ZERO";
-	case ERR_DECIMAL_LEN: return "ERR_DECIMAL_LEN";
-	case ERR_EXPONENT_LEN: return "ERR_EXPONENT_LEN";
-	case ERR_EXPONENT_LEADING_ZERO: return "ERR_EXPONENT_LEADING_ZERO";
-	case ERR_UNRECOG_TOKEN: return "ERR_UNRECOG_TOKEN";
-	case 0: return "NULL";
+#define X(a,b) case a: return #a;
+		SYMBS;
+#undef X
+	default: return "UNKNOWN";
 	}
-	return "UNKNOWN";
 }

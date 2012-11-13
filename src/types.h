@@ -3,77 +3,87 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#define TYPE_RELOP 100
-#define TYPE_WS 101
-#define TYPE_NUM 102
-#define TYPE_ENDOFFILE 103
-#define TYPE_ADDOP 104
-#define TYPE_MULOP 105
-#define TYPE_ASSIGNOP 106
-#define TYPE_PAREN 107
-#define TYPE_COMMA 108
-#define TYPE_SEMICOLON 109
-#define TYPE_COLON 110
-#define TYPE_PERIOD 111
-#define TYPE_DOUBLEPERIOD 112
-#define TYPE_ID 113
-#define TYPE_LBRACK 114
-#define TYPE_RBRACK 115
-#define TYPE_LPAREN 116
-#define TYPE_RPAREN 117
+#ifndef X
+#define TYPES_H_DEFINED_X
+#define X(a, b) a b,
+#endif
 
-#define TYPE_LEXERR 200
+#define SYMBS \
+X(NULL_, =0) \
+X(TYPE_RELOP, ) \
+X(TYPE_WS, ) \
+X(TYPE_NUM, ) \
+X(TYPE_ENDOFFILE, ) \
+X(TYPE_ADDOP, =104) \
+X(TYPE_MULOP, =105) \
+X(TYPE_ASSIGNOP, ) \
+X(TYPE_PAREN, ) \
+X(TYPE_COMMA, ) \
+X(TYPE_SEMICOLON, ) \
+X(TYPE_COLON, ) \
+X(TYPE_PERIOD, ) \
+X(TYPE_DOUBLEPERIOD, ) \
+X(TYPE_ID, ) \
+X(TYPE_LBRACK, ) \
+X(TYPE_RBRACK, ) \
+X(TYPE_LPAREN, ) \
+X(TYPE_RPAREN, ) \
+X(TYPE_LEXERR, ) \
+X(TYPE_PROGRAM, =300) \
+X(TYPE_VAR, =301) \
+X(TYPE_ARRAY, =302) \
+X(TYPE_OF, =303) \
+X(TYPE_INTEGER, =304) \
+X(TYPE_REAL, =305) \
+X(TYPE_FUNCTION, =306) \
+X(TYPE_PROCEDURE, =307) \
+X(TYPE_BEGIN, =308) \
+X(TYPE_END, =309) \
+X(TYPE_IF, =310) \
+X(TYPE_THEN, =311) \
+X(TYPE_ELSE, =312) \
+X(TYPE_WHILE, =313) \
+X(TYPE_DO, =314) \
+X(TYPE_NOT, =315) \
+X(RELOP_EQ, ) \
+X(RELOP_GE, ) \
+X(RELOP_GT, ) \
+X(RELOP_LE, ) \
+X(RELOP_NE, ) \
+X(RELOP_LT, ) \
+X(NUM_INT, ) \
+X(NUM_REAL, ) \
+X(NUM_LONGREAL, ) \
+X(ADDOP_PLUS, ) \
+X(ADDOP_MINUS, ) \
+X(ADDOP_OR, =1042) \
+X(MULOP_TIMES, ) \
+X(MULOP_DIVIDE, ) \
+X(MULOP_DIV, =1052) \
+X(MULOP_MOD, =1053) \
+X(MULOP_AND, =1054) \
+X(ERR_ID_LEN, ) \
+X(ERR_INT_LEN, ) \
+X(ERR_INT_LEADING_ZERO, ) \
+X(ERR_DECIMAL_LEN, ) \
+X(ERR_EXPONENT_LEN, ) \
+X(ERR_EXPONENT_LEADING_ZERO, ) \
+X(ERR_UNRECOG_TOKEN, ) \
 
-#define TYPE_PROGRAM 300
-#define TYPE_VAR 301
-#define TYPE_ARRAY 302
-#define TYPE_OF 303
-#define TYPE_INTEGER 304
-#define TYPE_REAL 305
-#define TYPE_FUNCTION 306
-#define TYPE_PROCEDURE 307
-#define TYPE_BEGIN 308
-#define TYPE_END 309
-#define TYPE_IF 310
-#define TYPE_THEN 311
-#define TYPE_ELSE 312
-#define TYPE_WHILE 313
-#define TYPE_DO 314
-#define TYPE_NOT 315
+#ifdef TYPES_H_DEFINED_X
 
-#define RELOP_EQ 1000
-#define RELOP_GE 1001
-#define RELOP_GT 1002
-#define RELOP_LE 1003
-#define RELOP_NE 1004
-#define RELOP_LT 1005
+enum Symbol {
+	SYMBS
+};
 
-#define NUM_INT 1020
-#define NUM_REAL 1021
-#define NUM_LONGREAL 1022
+#undef X
+#undef TYPES_H_DEFINED_X
+#endif
 
-#define ADDOP_PLUS 1040
-#define ADDOP_MINUS 1041
-#define ADDOP_OR 1042
-
-#define MULOP_TIMES 1050
-#define MULOP_DIVIDE 1051
-#define MULOP_DIV 1052
-#define MULOP_MOD 1053
-#define MULOP_AND 1054
-
-#define ERR_ID_LEN 2000
-#define ERR_INT_LEN 2001
-#define ERR_INT_LEADING_ZERO 2002
-#define ERR_DECIMAL_LEN 2003
-#define ERR_EXPONENT_LEN 2004
-#define ERR_EXPONENT_LEADING_ZERO 2005
-#define ERR_UNRECOG_TOKEN 2006
-
-typedef struct {
+typedef struct rword {
 	char* word;
-	int type;
-	int attribute;
+	enum Symbol type;
+	enum Symbol attribute;
 } ReservedWord;
 
 typedef struct rwordll {
@@ -82,6 +92,6 @@ typedef struct rwordll {
 } ReservedWordList;
 
 ReservedWordList* parseResWordFile(FILE* fp);
-char* convertConstantToString(int);
+char* convertConstantToString(enum Symbol);
 
 #endif
