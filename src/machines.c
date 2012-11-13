@@ -407,36 +407,37 @@ MachineResult CATCHALL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	res.newString = str+1;
 	switch(*str) {
 		case '(':
-			res.type = TYPE_PAREN;
-			res.attribute = PAREN_OPEN;
+			res.type = TYPE_LPAREN;
+			res.attribute = 0;
 			return res;
 		case ')':
-			res.type = TYPE_PAREN;
-			res.attribute = PAREN_CLOSE;
+			res.type = TYPE_RPAREN;
+			res.attribute = 0;
 			return res;
 		case '[':
-			res.type = TYPE_BRACKET;
-			res.attribute = BRACKET_OPEN;
+			res.type = TYPE_LBRACK;
+			res.attribute = 0;
 			return res;
 		case ']':
-			res.type = TYPE_BRACKET;
-			res.attribute = BRACKET_CLOSE;
+			res.type = TYPE_RBRACK;
+			res.attribute = 0;
 			return res;
 		case ',':
-			res.type = TYPE_OTHER;
-			res.attribute = OTHER_COMMA;
+			res.type = TYPE_COMMA;
+			res.attribute = 0;
 			return res;
 		case ';':
-			res.type = TYPE_OTHER;
-			res.attribute = OTHER_SEMICOLON;
+			res.type = TYPE_SEMICOLON;
+			res.attribute = 0;
 			return res;
 		case '.':
-			res.type = TYPE_OTHER;
 			if(str[1] == '.') {
-				res.attribute = OTHER_DOUBLEPERIOD;
+				res.type = TYPE_DOUBLEPERIOD;
+				res.attribute = 0;
 				res.newString = str+2;
 			} else {
-				res.attribute = OTHER_PERIOD;
+				res.type = TYPE_PERIOD;
+				res.attribute = 0;
 			}
 			return res;
 		case '+':
@@ -462,8 +463,8 @@ MachineResult CATCHALL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 				res.newString = str+2;
 				return res;
 			} else {
-				res.type = TYPE_OTHER;
-				res.attribute = OTHER_COLON;
+				res.type = TYPE_COLON;
+				res.attribute = 0;
 				return res;
 			}
 	}
