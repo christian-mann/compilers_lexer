@@ -22,5 +22,7 @@ typedef struct symbtab {
 	struct symbtab* next;
 } SymbolTable;
 
-MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbtab);
-typedef MachineResult (*Machine)(char*, ReservedWordList*, SymbolTable*);
+SymbolTable *tab;
+void machinesInit(char*);
+MachineResult identifyToken(char* str);
+typedef MachineResult (*Machine)(char*);

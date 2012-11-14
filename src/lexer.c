@@ -41,12 +41,6 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Warning: token file not given or not found, using stdout.\n");
 		fToken = stdout;
 	}
-	if(!sfReservedWords || (fReservedWords = fopen(sfReservedWords, "r")) == NULL) {
-		if (fReservedWords = fopen("data/reserved-words.txt", "r"))
-			fprintf(stderr, "Warning: reserved word file not given, using \"data/reserved-words.txt\"\n");
-		else
-			fprintf(stderr, "Warning: reserved word file not given or not found, not using reserved words.\n");
-	}
 	if(!sfSymbolTable || (fSymbolTable = fopen(sfSymbolTable, "w")) == NULL) {
 		fprintf(stderr, "Warning: symbol table file not given or not found, not outputting symbol table.\n");
 	}
@@ -56,16 +50,7 @@ int main(int argc, char **argv) {
 
 
 	//create symbol table
-	SymbolTable *symbtab = malloc(sizeof(SymbolTable));
-	symbtab->entry = NULL;
-
-	//read in reserved word list
-	ReservedWordList *rwl;
-	if(fReservedWords) {
-		rwl = parseResWordFile(fReservedWords);
-	} else {
-		rwl = malloc(sizeof(ReservedWordList));
-	}
+	machinesInit(sfReservedWords);
 
 	//begin reading a line at a time
 	char sLine[80];
@@ -84,7 +69,7 @@ int main(int argc, char **argv) {
 		//split line into tokens
 		char *psLine = sLine;
 		while(psLine < sLine + length && fToken) {
-			MachineResult res = identifyToken(psLine, rwl, symbtab);
+			MachineResult res = identifyToken(psLine);
 			if(res.type == T_WS) { //we don't care about whitespace
 
 			} else if(res.type == T_ID) {
@@ -92,7 +77,7 @@ int main(int argc, char **argv) {
 				if(res.error && fListing) {
 					fprintf(fListing, "%s:\t%p:\t%s\n", convertConstantToString(res.type), res.pointer, res.lexeme);
 				}
-			} else if(res.type == T_ENDOFFILE) {
+			} else if(res.type == T_EOF) {
 				fprintf(fToken, "%d\t%s\t%s\t%s\n", cLine, "(EOF)", convertConstantToString(res.type), convertConstantToString(res.attribute));
 				eof = true;
 			} else {
@@ -109,7 +94,7 @@ int main(int argc, char **argv) {
 
 	//print symbol table
 	if(fSymbolTable) {
-		for(SymbolTable* s = symbtab; s && s->entry && s->entry->word; s = s->next) {
+		for(SymbolTable* s = tab; s && s->entry && s->entry->word; s = s->next) {
 			fprintf(fSymbolTable, "%s\t%p\n", s->entry->word, s->entry);
 		}
 	}

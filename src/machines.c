@@ -3,9 +3,12 @@
 #include "machines.h"
 #include "types.h"
 
-ReservedWord* CheckReservedWords(char*, ReservedWordList*);
-SymbolTableEntry* checkSymbolTable(char*, SymbolTable*);
-MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
+ReservedWordList *rwl;
+
+ReservedWord* CheckReservedWords(char*);
+SymbolTableEntry* checkSymbolTable(char*);
+
+MachineResult IDRES(char* str) {
 	char* b = str;
 	char* f = b;
 	int state = 0;
@@ -38,13 +41,13 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 			char *lex = malloc((f-str)*sizeof(char)+1);
 			memcpy(lex, str, f-str);
 			lex[f-str] = 0;
-			ReservedWord *possResWord = CheckReservedWords(lex, rwl);
+			ReservedWord *possResWord = CheckReservedWords(lex);
 			if(possResWord) {
 				res.type = possResWord->type;
 				res.attribute = possResWord->attribute;
 				res.validToken = 1;
 			} else {
-				SymbolTableEntry* entry = checkSymbolTable(lex, symbtab);
+				SymbolTableEntry* entry = checkSymbolTable(lex);
 				res.type = T_ID;
 				res.pointer = entry;
 				res.validToken = 1;
@@ -60,7 +63,7 @@ MachineResult IDRES(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	}
 }
 
-ReservedWord* CheckReservedWords(char* word, ReservedWordList* rwl) {
+ReservedWord* CheckReservedWords(char* word) {
 	//Search for word in rwl
 	while(rwl != NULL && rwl->rword != NULL) {
 		if(!strcmp(word, rwl->rword->word)) {
@@ -74,28 +77,28 @@ ReservedWord* CheckReservedWords(char* word, ReservedWordList* rwl) {
 	return NULL;
 }
 
-SymbolTableEntry* checkSymbolTable(char* word, SymbolTable* tab) {
-	if(!tab->entry) {
-		tab->entry = malloc(sizeof(SymbolTableEntry));
-		tab->entry->word = malloc(strlen(word)+1);
-		strcpy(tab->entry->word, word);
-		return tab->entry;
-	} else {
-		if(!strcmp(word, tab->entry->word)) {
-			//found it!
-			return tab->entry;
+SymbolTableEntry* checkSymbolTable(char* word) {
+	SymbolTable* pTab = tab;
+	while(pTab->entry) {
+		if(!strcmp(word, pTab->entry->word)) {
+			//found it
+			return pTab->entry;
 		} else {
 			//go to next link
-			if(!tab->next) {
+			if(!pTab->next) {
 				//make new link
-				tab->next = malloc(sizeof(SymbolTable));
+				pTab->next = malloc(sizeof(SymbolTable));
 			}
-			return checkSymbolTable(word, tab->next);
+			pTab = pTab->next;
 		}
 	}
+	pTab->entry = malloc(sizeof(SymbolTableEntry));
+	pTab->entry->word = malloc(strlen(word)+1);
+	strcpy(pTab->entry->word, word);
+	return pTab->entry;
 }
 
-MachineResult RELOP(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
+MachineResult RELOP(char* str) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
@@ -154,7 +157,7 @@ MachineResult RELOP(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	}
 }
 
-MachineResult WS(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
+MachineResult WS(char* str) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
@@ -190,7 +193,7 @@ MachineResult WS(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	}
 }
 
-MachineResult INT(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
+MachineResult INT(char* str) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
@@ -234,7 +237,7 @@ MachineResult INT(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	}
 }
 
-MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
+MachineResult REAL(char* str) {
 	char* f = str;
 	int state = 0;
 	MachineResult res;
@@ -293,7 +296,7 @@ MachineResult REAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	}
 }
 
-MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
+MachineResult LONGREAL(char* str) {
 	char *f = str;
 	int state = 0;
 	MachineResult res;
@@ -385,10 +388,10 @@ MachineResult LONGREAL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	}
 }
 
-MachineResult ENDOFFILE(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
+MachineResult ENDOFFILE(char* str) {
 	MachineResult res;
 	res.error = 0;
-	res.type = T_ENDOFFILE;
+	res.type = T_EOF;
 	res.attribute = 0;
 	res.validToken = 1;
 	if(*str == EOF) {//end-of-file character
@@ -400,7 +403,7 @@ MachineResult ENDOFFILE(char* str, ReservedWordList* rwl, SymbolTable* symbtab) 
 	return res;
 }
 
-MachineResult CATCHALL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
+MachineResult CATCHALL(char* str) {
 	MachineResult res;
 	res.error = 0;
 	res.validToken = 1;
@@ -474,13 +477,24 @@ MachineResult CATCHALL(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
 	return res;
 }
 
+void machinesInit(char* sfReservedWords) {
+	tab = malloc(sizeof(SymbolTable));
+	tab->entry = NULL;
+
+	FILE *fReservedWords = fopen(sfReservedWords, "r");
+	if(fReservedWords) {
+		rwl = parseResWordFile(fReservedWords);
+	} else {
+		rwl = malloc(sizeof(ReservedWordList));
+	}
+}
 
 static Machine machines[] = {&WS, &IDRES, &LONGREAL, &REAL, &INT, &RELOP, &CATCHALL, &ENDOFFILE};
 
-MachineResult identifyToken(char* str, ReservedWordList* rwl, SymbolTable* symbtab) {
+MachineResult identifyToken(char* str) {
 	int i;
 	for(i = 0; i < sizeof(machines)/sizeof(machines[0]); i++) {
-		MachineResult res = (*(machines[i]))(str, rwl, symbtab);
+		MachineResult res = (*(machines[i]))(str);
 		if(res.error) {
 			res.type = T_LEXERR;
 			res.attribute = res.error;
