@@ -64,14 +64,17 @@ MachineResult IDRES(char* str) {
 }
 
 ReservedWord* CheckReservedWords(char* word) {
-	//Search for word in rwl
-	while(rwl != NULL && rwl->rword != NULL) {
-		if(!strcmp(word, rwl->rword->word)) {
+	//get local pointer
+	ReservedWordList* prwl = rwl;
+
+	//Search for word in prwl
+	while(prwl != NULL && prwl->rword != NULL) {
+		if(!strcmp(word, prwl->rword->word)) {
 			//found it!
-			return rwl->rword;
+			return prwl->rword;
 		} else {
 			//go to next link
-			rwl = rwl->next;
+			prwl = prwl->next;
 		}
 	}
 	return NULL;
