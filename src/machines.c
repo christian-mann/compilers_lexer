@@ -359,7 +359,7 @@ MachineResult LONGREAL(char* str) {
 					state = -1;
 				break;
 			case 6:
-				if('1' <= *f && *f <= '9')
+				if('0' <= *f && *f <= '9')
 					state = 6;
 				else
 					state = 7;
